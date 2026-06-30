@@ -1,19 +1,10 @@
 import { isSteamApiPath } from '../utils/steamProxy'
 
-const PROXY_URL_KEY = 'stm-proxy-base-url'
+const PRODUCTION_PROXY_BASE_URL = ''
 const STEAM_FETCH_RETRIES = 3
 
-export function getProxyBaseUrl(): string {
-  return localStorage.getItem(PROXY_URL_KEY)?.replace(/\/$/, '') ?? ''
-}
-
-export function setProxyBaseUrl(url: string): void {
-  const trimmed = url.trim().replace(/\/$/, '')
-  if (trimmed) {
-    localStorage.setItem(PROXY_URL_KEY, trimmed)
-  } else {
-    localStorage.removeItem(PROXY_URL_KEY)
-  }
+function getProxyBaseUrl(): string {
+  return import.meta.env.DEV ? '' : PRODUCTION_PROXY_BASE_URL.replace(/\/$/, '')
 }
 
 export interface ApiClient {

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { getProxyBaseUrl, setProxyBaseUrl } from './api/client'
 import { GameSelector } from './components/GameSelector'
 import { BotResultList } from './components/BotResultList'
 import { SearchControls } from './components/SearchControls'
@@ -23,17 +22,12 @@ export default function App() {
   } = useBotSearch()
 
   const [game, setGame] = useState<SteamApp | null>(null)
-  const [proxyUrl, setProxyUrl] = useState(getProxyBaseUrl)
 
   function handleStart() {
     if (!game) {
       return
     }
     void startSearch(game)
-  }
-
-  function saveProxy() {
-    setProxyBaseUrl(proxyUrl)
   }
 
   return (
@@ -79,25 +73,6 @@ export default function App() {
         <SearchProgressBar progress={progress} />
 
         <BotResultList results={results} />
-
-        <section className="panel settings-panel">
-          <h2>Настройки</h2>
-          <p className="hint">
-            URL прокси для GitHub Pages (Cloudflare Worker). В dev оставьте пустым — используется Vite proxy.
-          </p>
-          <div className="proxy-row">
-            <input
-              type="url"
-              value={proxyUrl}
-              onChange={(e) => setProxyUrl(e.target.value)}
-              placeholder="https://your-worker.example.com"
-              disabled={isSearching}
-            />
-            <button type="button" onClick={saveProxy} disabled={isSearching}>
-              Сохранить
-            </button>
-          </div>
-        </section>
       </main>
 
       <footer className="app-footer">
