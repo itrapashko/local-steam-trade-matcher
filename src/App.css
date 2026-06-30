@@ -57,6 +57,11 @@
   margin: 0.5rem 0 0;
 }
 
+.notice {
+  color: #c6a86a;
+  margin: 0.5rem 0 0;
+}
+
 .game-selector {
   position: relative;
 }

@@ -51,3 +51,8 @@ export function parseGameCardsHtml(html: string): OwnedGameCard[] {
 export function totalCardCount(cards: OwnedGameCard[]): number {
   return cards.reduce((sum, card) => sum + card.quantity, 0)
 }
+
+export function gameHasTradingCards(html: string): boolean {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  return doc.querySelectorAll('.badge_card_set_card').length > 0
+}

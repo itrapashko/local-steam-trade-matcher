@@ -22,6 +22,7 @@ export type SearchStatus =
   | 'paused'
   | 'done'
   | 'stopped'
+  | 'no-cards'
   | 'error'
 
 export interface SearchProgress {

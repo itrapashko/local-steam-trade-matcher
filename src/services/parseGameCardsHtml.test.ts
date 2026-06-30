@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import {
+  gameHasTradingCards,
   parseGameCardsHtml,
   parseQuantity,
   totalCardCount,
@@ -93,5 +94,29 @@ describe('totalCardCount', () => {
         { name: 'B', quantity: 3, imageUrl: null },
       ]),
     ).toBe(5)
+  })
+})
+
+describe('gameHasTradingCards', () => {
+  it('returns true when the page has card slots', () => {
+    expect(gameHasTradingCards(sampleHtml)).toBe(true)
+  })
+
+  it('returns true for unowned-only card sets', () => {
+    const html = '<div class="badge_card_set_card unowned"><span class="badge_card_set_title">X</span></div>'
+    expect(gameHasTradingCards(html)).toBe(true)
+  })
+
+  it('returns false when Steam redirects to the badges overview', () => {
+    const html = '<title>Steam Community :: Steam Badges</title><div class="badge_row"></div>'
+    expect(gameHasTradingCards(html)).toBe(false)
+  })
+
+  it('returns true for real Steam gamecards layout', () => {
+    const html = readFileSync(
+      join(fixtureDir, '../test-fixtures/fancy-gamecards.html'),
+      'utf-8',
+    )
+    expect(gameHasTradingCards(html)).toBe(true)
   })
 })

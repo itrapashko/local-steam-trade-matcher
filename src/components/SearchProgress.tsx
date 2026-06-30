@@ -11,6 +11,7 @@ const statusLabels: Record<SearchProgress['status'], string> = {
   paused: 'Paused',
   done: 'Done',
   stopped: 'Stopped',
+  'no-cards': 'No trading cards',
   error: 'Error',
 }
 
@@ -41,7 +42,9 @@ export function SearchProgressBar({ progress }: SearchProgressProps) {
       {currentBotNickname && status === 'searching' && (
         <p className="current-bot">Checking: {currentBotNickname}</p>
       )}
-      {errorMessage && <p className="error">{errorMessage}</p>}
+      {errorMessage && (
+        <p className={status === 'error' ? 'error' : 'notice'}>{errorMessage}</p>
+      )}
     </section>
   )
 }
