@@ -1,19 +1,19 @@
-import react from '@vitejs/plugin-react';
-import type { ProxyOptions } from 'vite';
-import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react'
+import type { ProxyOptions } from 'vite'
+import { defineConfig } from 'vitest/config'
 
-const STEAM_ORIGIN = 'https://steamcommunity.com';
+const STEAM_ORIGIN = 'https://steamcommunity.com'
 
 function rewriteSteamRedirectLocation(proxyRes: { headers: Record<string, string | string[] | undefined> }) {
-  const location = proxyRes.headers.location;
+  const location = proxyRes.headers.location
   if (!location) {
-    return;
+    return
   }
-  const value = Array.isArray(location) ? location[0] : location;
+  const value = Array.isArray(location) ? location[0] : location
   if (value.startsWith(STEAM_ORIGIN)) {
-    proxyRes.headers.location = value.replace(STEAM_ORIGIN, '/api/steam');
+    proxyRes.headers.location = value.replace(STEAM_ORIGIN, '/api/steam')
   } else if (value.startsWith('/')) {
-    proxyRes.headers.location = `/api/steam${value}`;
+    proxyRes.headers.location = `/api/steam${value}`
   }
 }
 
@@ -23,9 +23,9 @@ const steamProxy: ProxyOptions = {
   followRedirects: true,
   rewrite: (path) => path.replace(/^\/api\/steam/, ''),
   configure: (proxy) => {
-    proxy.on('proxyRes', rewriteSteamRedirectLocation);
+    proxy.on('proxyRes', rewriteSteamRedirectLocation)
   },
-};
+}
 
 export default defineConfig({
   plugins: [react()],
@@ -44,4 +44,4 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.test.ts'],
   },
-});
+})

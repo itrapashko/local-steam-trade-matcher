@@ -1,10 +1,10 @@
 import { isSteamApiPath } from '../utils/steamProxy'
 
-const PRODUCTION_PROXY_BASE_URL = ''
+const PRODUCTION_PROXY_BASE_URL = (import.meta.env.VITE_PROXY_BASE_URL ?? '').replace(/\/$/, '')
 const STEAM_FETCH_RETRIES = 3
 
 function getProxyBaseUrl(): string {
-  return import.meta.env.DEV ? '' : PRODUCTION_PROXY_BASE_URL.replace(/\/$/, '')
+  return import.meta.env.DEV ? '' : PRODUCTION_PROXY_BASE_URL
 }
 
 export interface ApiClient {
