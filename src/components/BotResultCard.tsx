@@ -33,7 +33,7 @@ export function BotResultCard({ result }: BotResultCardProps) {
             <span className={`trade-mode trade-mode-${tradeMode.toLowerCase()}`}>
               {tradeMode}
             </span>
-            <span className="bot-stats">{cardTotal} карточек</span>
+            <span className="bot-stats">{cardTotal} cards</span>
           </div>
           <div className="bot-links">
             <a
@@ -41,17 +41,17 @@ export function BotResultCard({ result }: BotResultCardProps) {
               target="_blank"
               rel="noreferrer"
             >
-              Карточки игры
+              Game cards
             </a>
             <a href={buildInventoryUrl(steamId)} target="_blank" rel="noreferrer">
-              Инвентарь
+              Inventory
             </a>
             <a
               href={buildTradeOfferUrl(steamId, bot.TradeToken)}
               target="_blank"
               rel="noreferrer"
             >
-              Трейд
+              Trade
             </a>
           </div>
         </div>

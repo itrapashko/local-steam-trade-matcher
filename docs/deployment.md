@@ -1,55 +1,55 @@
-# Деплой
+# Deployment
 
 ## GitHub Pages
 
-Сайт: https://itrapashko.github.io/local-steam-trade-matcher/
+Live site: https://itrapashko.github.io/local-steam-trade-matcher/
 
-При push в `main` workflow [`.github/workflows/deploy-pages.yml`](../.github/workflows/deploy-pages.yml) собирает `dist/` и пушит в ветку `gh-pages`.
+On push to `main`, the [`.github/workflows/deploy-pages.yml`](../.github/workflows/deploy-pages.yml) workflow builds `dist/` and pushes to the `gh-pages` branch.
 
-### Настройка Pages (один раз)
+### Pages setup (one time)
 
 1. **Settings → Pages → Build and deployment → Source:** Deploy from a branch
 2. **Branch:** `gh-pages` / `/ (root)`
 
-### Переменная прокси
+### Proxy variable
 
 **Settings → Secrets and variables → Actions → Variables:**
 
 | Name | Value |
 |------|--------|
-| `VITE_PROXY_BASE_URL` | URL Cloudflare Worker без `/` в конце |
+| `VITE_PROXY_BASE_URL` | Cloudflare Worker URL with no trailing `/` |
 
-Без этой переменной сайт откроется, но поиск ботов не заработает. Подробнее: [proxy.md](proxy.md).
+Without this variable the site loads, but bot search will not work. See [proxy.md](proxy.md).
 
-После добавления или изменения переменной перезапустите деплой (push в `main` или **Actions → Deploy to GitHub Pages → Run workflow**).
+After adding or changing the variable, redeploy (push to `main` or **Actions → Deploy to GitHub Pages → Run workflow**).
 
-## Скрипты
+## Scripts
 
-| Команда | Описание |
-|---------|----------|
-| `npm run dev` | Dev-сервер с Vite proxy |
-| `npm run build` | Production-сборка |
-| `npm run build:pages` | Сборка для GitHub Pages (`base`: `/local-steam-trade-matcher/`) |
-| `npm run preview` | Просмотр сборки |
-| `npm test` | Unit-тесты |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server with Vite proxy |
+| `npm run build` | Production build |
+| `npm run build:pages` | Build for GitHub Pages (`base`: `/local-steam-trade-matcher/`) |
+| `npm run preview` | Preview production build |
+| `npm test` | Unit tests |
 
-## Локальная сборка для Pages
+## Local Pages build
 
 ```bash
 npm run build:pages
 npm run preview
 ```
 
-С прокси (PowerShell):
+With proxy (PowerShell):
 
 ```powershell
 $env:VITE_PROXY_BASE_URL="https://your-worker.workers.dev"; npm run build:pages
 ```
 
-## Структура проекта
+## Project layout
 
 ```
-src/           — React-приложение
+src/           — React app
 proxy/         — Cloudflare Worker
-.github/       — CI/CD (деплой на gh-pages)
+.github/       — CI/CD (deploy to gh-pages)
 ```

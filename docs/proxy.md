@@ -1,34 +1,34 @@
-# Прокси и CORS
+# Proxy and CORS
 
-Steam Community и ASF API не отдают CORS-заголовки. Браузер не может обращаться к ним напрямую с GitHub Pages.
+Steam Community and the ASF API do not send CORS headers. The browser cannot call them directly from GitHub Pages.
 
-## Режим разработки
+## Development
 
-Vite проксирует запросы (`vite.config.ts`):
+Vite proxies requests (`vite.config.ts`):
 
-| Путь | Upstream |
+| Path | Upstream |
 |------|----------|
 | `/api/asf/*` | `https://asf.justarchi.net` |
 | `/api/steam/*` | `https://steamcommunity.com` |
 
-Для Steam дополнительно переписываются заголовки `Location` при редиректах, чтобы браузер оставался на `/api/steam`.
+For Steam, `Location` headers are rewritten on redirects so the browser stays on `/api/steam`.
 
-Запуск: `npm run dev` — отдельный прокси не нужен.
+Run `npm run dev` — no separate proxy is required.
 
 ## GitHub Pages
 
-На Pages нет бэкенда. Запросы идут на внешний CORS-прокси с теми же путями:
+There is no backend on Pages. Requests go to an external CORS proxy with the same paths:
 
 - `{proxy}/api/asf/*` → `https://asf.justarchi.net/*`
 - `{proxy}/api/steam/*` → `https://steamcommunity.com/*`
 
-URL прокси вшивается в сборку через переменную `VITE_PROXY_BASE_URL` (см. [deployment.md](deployment.md)).
+The proxy URL is baked into the build via `VITE_PROXY_BASE_URL` (see [deployment.md](deployment.md)).
 
-Код: `src/api/client.ts` — в dev base URL пустой, в production берётся из `import.meta.env.VITE_PROXY_BASE_URL`.
+Code: `src/api/client.ts` — empty base URL in dev, `import.meta.env.VITE_PROXY_BASE_URL` in production.
 
 ## Cloudflare Worker
 
-Готовый worker: [`proxy/worker.ts`](../proxy/worker.ts).
+Ready-made worker: [`proxy/worker.ts`](../proxy/worker.ts).
 
 ```bash
 cd proxy
@@ -37,20 +37,20 @@ npx wrangler login
 npm run deploy
 ```
 
-После деплоя worker доступен по адресу вида:
+After deploy the worker is available at:
 
 `https://local-steam-trade-matcher-proxy.<account>.workers.dev`
 
-Проверка:
+Smoke test:
 
 ```
 https://local-steam-trade-matcher-proxy.<account>.workers.dev/api/asf/Api/Listing/Bots
 ```
 
-Должен вернуться JSON со списком ботов.
+You should get JSON with the bot list.
 
-Worker следует редиректам Steam на стороне сервера (`redirect: 'follow'`), поэтому браузеру не нужно ходить на `steamcommunity.com` напрямую.
+The worker follows Steam redirects server-side (`redirect: 'follow'`), so the browser never needs to hit `steamcommunity.com` directly.
 
-## Список игр
+## Game list
 
-Загружается напрямую с GitHub ([jsnli/steamappidlist](https://github.com/jsnli/steamappidlist), обновляется ежедневно) и кэшируется в IndexedDB — список слишком большой для `localStorage`. Прокси для этого не требуется.
+Loaded directly from GitHub ([jsnli/steamappidlist](https://github.com/jsnli/steamappidlist), updated daily) and cached in IndexedDB — the list is too large for `localStorage`. No proxy is required for this.

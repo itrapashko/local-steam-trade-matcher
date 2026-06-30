@@ -1,25 +1,25 @@
 # Local Steam Trade Matcher
 
-**Сайт:** https://itrapashko.github.io/local-steam-trade-matcher/
+**Live site:** https://itrapashko.github.io/local-steam-trade-matcher/
 
-Клиентское веб-приложение для поиска ботов, у которых есть торговые карточки выбранной игры.
+A client-side web app for finding bots that own trading cards for a selected game.
 
-## Возможности
+## Features
 
-- Выбор игры по AppID или названию (autocomplete)
-- Поиск по списку ботов из [ASF Listing API](https://asf.justarchi.net/Api/Listing/Bots)
-- Прогресс в реальном времени, пауза и продолжение
-- Список owned-карточек игры для каждого найденного бота
+- Pick a game by AppID or name (autocomplete)
+- Search the [ASF Listing API](https://asf.justarchi.net/Api/Listing/Bots) bot list
+- Live progress with pause and resume
+- Owned game cards for each matching bot
 
-## Быстрый старт
+## Quick start
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Документация
+## Documentation
 
-- [Прокси и CORS](docs/proxy.md)
-- [Деплой](docs/deployment.md)
-- [Ограничения](docs/limitations.md)
+- [Proxy and CORS](docs/proxy.md)
+- [Deployment](docs/deployment.md)
+- [Limitations](docs/limitations.md)

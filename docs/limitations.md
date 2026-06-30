@@ -1,5 +1,5 @@
-# Ограничения
+# Limitations
 
-- Поиск использует страницу `gamecards/{appId}` — видны **обычные** карточки сета; foil-карточки на ней обычно не отображаются.
-- ~500 ботов × ~1 с задержки ≈ 8–10 минут на полный проход.
-- Steam может вернуть 429 при слишком частых запросах — в коде есть задержка и retry.
+- Search uses the `gamecards/{appId}` page — only **regular** set cards are shown; foil cards are usually not listed there.
+- ~500 bots × ~1 s delay ≈ 8–10 minutes for a full pass.
+- Steam may return 429 when requests are too frequent — the app uses delays and retries.

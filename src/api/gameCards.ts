@@ -13,7 +13,7 @@ export async function fetchOwnedGameCards(
     )
     return parseGameCardsHtml(html)
   } catch (error) {
-    console.warn(`[STM] Не удалось загрузить карточки ${steamId}/${appId}:`, error)
+    console.warn(`[STM] Failed to load cards ${steamId}/${appId}:`, error)
     return []
   }
 }

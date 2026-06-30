@@ -2,7 +2,7 @@ const STEAM_ORIGIN_HTTPS = 'https://steamcommunity.com'
 const STEAM_ORIGIN_HTTP = 'http://steamcommunity.com'
 export const MAX_STEAM_REDIRECTS = 5
 
-/** Переписывает Location с steamcommunity.com на путь через /api/steam прокси. */
+/** Rewrites Location from steamcommunity.com to a path via the /api/steam proxy. */
 export function toProxiedSteamUrl(location: string, apiBaseUrl: string): string {
   let path: string
 

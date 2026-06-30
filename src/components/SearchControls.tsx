@@ -19,20 +19,20 @@ export function SearchControls({
 }: SearchControlsProps) {
   return (
     <section className="panel controls">
-      <h2>Поиск ботов</h2>
+      <h2>Bot search</h2>
       <div className="button-row">
         <button type="button" disabled={!canStart || isSearching} onClick={onStart}>
-          Начать поиск
+          Start search
         </button>
         <button
           type="button"
           disabled={!isSearching || isPaused}
           onClick={onPause}
         >
-          Пауза
+          Pause
         </button>
         <button type="button" disabled={!isPaused} onClick={onResume}>
-          Продолжить
+          Resume
         </button>
         <button
           type="button"
@@ -40,7 +40,7 @@ export function SearchControls({
           onClick={onStop}
           className="secondary"
         >
-          Остановить
+          Stop
         </button>
       </div>
     </section>

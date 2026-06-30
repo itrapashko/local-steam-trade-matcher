@@ -114,7 +114,7 @@ export class BotSearchService {
         this.emitProgress('done', null, total, total)
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Неизвестная ошибка'
+      const message = error instanceof Error ? error.message : 'Unknown error'
       this.callbacks.onProgress({
         checked: this.currentIndex,
         total: this.bots.length,
@@ -166,7 +166,7 @@ export function filterBots(bots: AsfBot[]): AsfBot[] {
   })
 }
 
-/** Сначала боты с большим числом карточек (TotalItemsCount в ASF listing). */
+/** Bots with more cards first (TotalItemsCount in ASF listing). */
 export function sortBotsByCardCount(bots: AsfBot[]): AsfBot[] {
   return [...bots].sort((a, b) => {
     if (b.TotalItemsCount !== a.TotalItemsCount) {
@@ -175,6 +175,6 @@ export function sortBotsByCardCount(bots: AsfBot[]): AsfBot[] {
     if (b.TotalGamesCount !== a.TotalGamesCount) {
       return b.TotalGamesCount - a.TotalGamesCount
     }
-    return a.Nickname.localeCompare(b.Nickname, 'ru')
+    return a.Nickname.localeCompare(b.Nickname, 'en')
   })
 }

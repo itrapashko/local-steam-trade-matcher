@@ -12,7 +12,7 @@ export function BotResultList({ results }: BotResultListProps) {
 
   return (
     <section className="panel results-panel">
-      <h2>Найденные боты ({results.length})</h2>
+      <h2>Matching bots ({results.length})</h2>
       <div className="results-list">
         {results.map((result) => (
           <BotResultCard key={result.bot.SteamIDText} result={result} />

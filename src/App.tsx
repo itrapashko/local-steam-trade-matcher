@@ -36,7 +36,7 @@ export default function App() {
         <div>
           <h1>Local Steam Trade Matcher</h1>
           <p className="subtitle">
-            Поиск ASF-ботов с карточками выбранной игры
+            Find ASF bots with trading cards for a selected game
           </p>
         </div>
       </header>
@@ -69,13 +69,13 @@ export default function App() {
 
       <footer className="app-footer">
         <p>
-          Данные ботов:{' '}
+          Bot data:{' '}
           <a href="https://asf.justarchi.net/Api/Listing/Bots" target="_blank" rel="noreferrer">
             ASF Listing API
           </a>
         </p>
         {selectedGame && progress.status === 'done' && (
-          <p>Поиск по игре {selectedGame.name} завершён.</p>
+          <p>Search for {selectedGame.name} finished.</p>
         )}
       </footer>
     </div>

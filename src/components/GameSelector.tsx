@@ -72,18 +72,18 @@ export function GameSelector({
 
   return (
     <section className="panel">
-      <h2>Выбор игры</h2>
+      <h2>Select game</h2>
       <p className="hint">
-        Введите AppID или название игры. AppID можно указать вручную, даже если игры нет в списке Steam.
+        Enter an AppID or game name. You can type an AppID manually even if the game is not in the Steam list.
       </p>
-      {loading && <p className="status">Загрузка списка игр…</p>}
+      {loading && <p className="status">Loading game list…</p>}
       {error && <p className="error">{error}</p>}
       <div className="game-selector" ref={containerRef}>
         <input
           type="text"
           value={query}
           disabled={disabled}
-          placeholder="Например: 263280 или WAVESHAPER"
+          placeholder="e.g. 263280 or WAVESHAPER"
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setOpen(true)}
@@ -103,7 +103,7 @@ export function GameSelector({
       </div>
       {selected && (
         <p className="selected-game">
-          Выбрано: <strong>{selected.name}</strong> (AppID {selected.appid})
+          Selected: <strong>{selected.name}</strong> (AppID {selected.appid})
         </p>
       )}
     </section>

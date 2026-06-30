@@ -29,7 +29,7 @@ export function useAppList() {
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Ошибка загрузки списка игр')
+          setError(err instanceof Error ? err.message : 'Failed to load game list')
           setLoading(false)
         }
       })

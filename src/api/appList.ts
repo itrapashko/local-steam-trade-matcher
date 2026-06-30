@@ -32,7 +32,7 @@ export async function loadAppList(): Promise<SteamApp[]> {
 
   const response = await fetch(APP_LIST_URL)
   if (!response.ok) {
-    throw new Error(`Не удалось загрузить список игр: HTTP ${response.status}`)
+    throw new Error(`Failed to load game list: HTTP ${response.status}`)
   }
 
   const data = (await response.json()) as RawAppList
@@ -54,7 +54,7 @@ export async function loadAppList(): Promise<SteamApp[]> {
 }
 
 export function unknownSteamApp(appId: number): SteamApp {
-  return { appid: appId, name: 'Игра не в списке Steam' }
+  return { appid: appId, name: 'Game not in Steam list' }
 }
 
 export function resolveSteamApp(apps: SteamApp[], appId: number): SteamApp {
@@ -106,7 +106,7 @@ function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(IDB_NAME, 1)
     request.onerror = () => {
-      reject(request.error ?? new Error('Не удалось открыть IndexedDB'))
+      reject(request.error ?? new Error('Failed to open IndexedDB'))
     }
     request.onupgradeneeded = () => {
       const db = request.result

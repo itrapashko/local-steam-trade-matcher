@@ -5,13 +5,13 @@ interface SearchProgressProps {
 }
 
 const statusLabels: Record<SearchProgress['status'], string> = {
-  idle: 'Ожидание',
-  'loading-bots': 'Загрузка списка ботов…',
-  searching: 'Поиск…',
-  paused: 'Пауза',
-  done: 'Завершено',
-  stopped: 'Остановлено',
-  error: 'Ошибка',
+  idle: 'Idle',
+  'loading-bots': 'Loading bot list…',
+  searching: 'Searching…',
+  paused: 'Paused',
+  done: 'Done',
+  stopped: 'Stopped',
+  error: 'Error',
 }
 
 export function SearchProgressBar({ progress }: SearchProgressProps) {
@@ -29,7 +29,7 @@ export function SearchProgressBar({ progress }: SearchProgressProps) {
         <span className="status-label">{statusLabels[status]}</span>
         {total > 0 && (
           <span className="progress-counts">
-            {checked} / {total} · найдено: {found}
+            {checked} / {total} · found: {found}
           </span>
         )}
       </div>
@@ -39,7 +39,7 @@ export function SearchProgressBar({ progress }: SearchProgressProps) {
         </div>
       )}
       {currentBotNickname && status === 'searching' && (
-        <p className="current-bot">Проверяется: {currentBotNickname}</p>
+        <p className="current-bot">Checking: {currentBotNickname}</p>
       )}
       {errorMessage && <p className="error">{errorMessage}</p>}
     </section>
