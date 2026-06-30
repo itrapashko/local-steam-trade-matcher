@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:pages": "tsc && vite build --base /local-steam-trade-matcher/",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
