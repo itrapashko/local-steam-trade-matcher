@@ -39,14 +39,6 @@ export default function App() {
             Поиск ASF-ботов с карточками выбранной игры
           </p>
         </div>
-        <a
-          href="https://asf.justarchi.net/STM"
-          target="_blank"
-          rel="noreferrer"
-          className="stm-link"
-        >
-          ASF STM
-        </a>
       </header>
 
       <main className="app-main">

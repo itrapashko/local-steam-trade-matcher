@@ -26,19 +26,6 @@
   font-size: 0.95rem;
 }
 
-.stm-link {
-  white-space: nowrap;
-  padding: 0.5rem 1rem;
-  border: 1px solid #2a475e;
-  border-radius: 4px;
-  text-decoration: none;
-  background: #2a475e33;
-}
-
-.stm-link:hover {
-  background: #2a475e66;
-}
-
 .app-main {
   display: flex;
   flex-direction: column;
