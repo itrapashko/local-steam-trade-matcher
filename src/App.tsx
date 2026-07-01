@@ -38,7 +38,7 @@ export default function App() {
         <div>
           <h1>Local Steam Trade Matcher</h1>
           <p className="subtitle">
-            Find ASF bots with trading cards for a selected game
+            Find Steam trading card bots for a selected game. No queues.
           </p>
         </div>
         <a
