@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://itrapashko.github.io/local-steam-trade-matcher/sitemap.xml
