@@ -1,5 +1,10 @@
 import type { ApiClient } from './client'
-import { gameHasTradingCards, parseGameCardsHtml } from '../services/parseGameCardsHtml'
+import {
+  gameHasTradingCards,
+  parseGameCardsHtml,
+  parseGameSetCards,
+  type GameSetCard,
+} from '../services/parseGameCardsHtml'
 import type { OwnedGameCard } from '../types/steam'
 
 function gameCardsPath(steamId: number | string, appId: number): string {
@@ -21,6 +26,18 @@ export async function checkGameHasTradingCards(
 ): Promise<boolean> {
   const html = await fetchGameCardsHtml(client, steamId, appId)
   return gameHasTradingCards(html)
+}
+
+export async function fetchGameSetCards(
+  client: ApiClient,
+  steamId: number | string,
+  appId: number,
+): Promise<GameSetCard[] | null> {
+  const html = await fetchGameCardsHtml(client, steamId, appId)
+  if (!gameHasTradingCards(html)) {
+    return null
+  }
+  return parseGameSetCards(html)
 }
 
 export async function fetchOwnedGameCards(

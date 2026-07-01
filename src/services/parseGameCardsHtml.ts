@@ -48,6 +48,29 @@ export function parseGameCardsHtml(html: string): OwnedGameCard[] {
   return cards
 }
 
+export interface GameSetCard {
+  name: string
+  imageUrl: string | null
+}
+
+export function parseGameSetCards(html: string): GameSetCard[] {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const elements = doc.querySelectorAll('.badge_card_set_card')
+
+  const cards: GameSetCard[] = []
+  elements.forEach((element) => {
+    const name = parseCardName(element.querySelector('.badge_card_set_title'))
+    if (!name) {
+      return
+    }
+
+    const imageUrl = element.querySelector('img.gamecard')?.getAttribute('src') ?? null
+    cards.push({ name, imageUrl })
+  })
+
+  return cards
+}
+
 export function totalCardCount(cards: OwnedGameCard[]): number {
   return cards.reduce((sum, card) => sum + card.quantity, 0)
 }

@@ -3,7 +3,9 @@ import { GameSelector } from './components/GameSelector'
 import { BotResultList } from './components/BotResultList'
 import { SearchControls } from './components/SearchControls'
 import { SearchProgressBar } from './components/SearchProgress'
+import { SearchSettings } from './components/SearchSettings'
 import { useAppList, useBotSearch, useGameCardCheck } from './hooks/useBotSearch'
+import { useSearchFilters } from './hooks/useSearchFilters'
 import type { SteamApp } from './types/steam'
 import './App.css'
 
@@ -24,7 +26,13 @@ export default function App() {
   } = useBotSearch()
 
   const [game, setGame] = useState<SteamApp | null>(null)
-  const { cardStatus, cardError } = useGameCardCheck(game)
+  const { cardStatus, cardError, gameCards } = useGameCardCheck(game)
+  const {
+    anyModeOnly,
+    setAnyModeOnly,
+    selectedCardNames,
+    setSelectedCardNames,
+  } = useSearchFilters(game?.appid ?? null)
 
   function handleStart() {
     if (!game) {
@@ -65,6 +73,17 @@ export default function App() {
           cardError={cardError}
         />
 
+        {cardStatus === 'has-cards' && game && (
+          <SearchSettings
+            game={game}
+            gameCards={gameCards}
+            anyModeOnly={anyModeOnly}
+            onAnyModeOnlyChange={setAnyModeOnly}
+            selectedCardNames={selectedCardNames}
+            onSelectedCardNamesChange={setSelectedCardNames}
+          />
+        )}
+
         <SearchControls
           canStart={!!game && cardStatus === 'has-cards'}
           isSearching={isSearching}
@@ -77,7 +96,11 @@ export default function App() {
 
         <SearchProgressBar progress={progress} />
 
-        <BotResultList results={results} />
+        <BotResultList
+          results={results}
+          anyModeOnly={anyModeOnly}
+          selectedCardNames={selectedCardNames}
+        />
       </main>
 
       <footer className="app-footer">

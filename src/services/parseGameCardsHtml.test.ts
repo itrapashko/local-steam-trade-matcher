@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import {
   gameHasTradingCards,
   parseGameCardsHtml,
+  parseGameSetCards,
   parseQuantity,
   totalCardCount,
 } from './parseGameCardsHtml'
@@ -42,6 +43,36 @@ describe('parseQuantity', () => {
     expect(parseQuantity('(0)')).toBe(0)
     expect(parseQuantity('')).toBe(1)
     expect(parseQuantity(undefined)).toBe(1)
+  })
+})
+
+describe('parseGameSetCards', () => {
+  it('returns all cards in the set, owned and unowned', () => {
+    const cards = parseGameSetCards(sampleHtml)
+    expect(cards).toHaveLength(3)
+    expect(cards[0]).toEqual({
+      name: 'Triangle',
+      imageUrl: 'https://example.com/triangle.png',
+    })
+    expect(cards[2]).toEqual({
+      name: 'Player',
+      imageUrl: 'https://example.com/player.png',
+    })
+  })
+
+  it('parses full card set from real Steam layout', () => {
+    const html = readFileSync(
+      join(fixtureDir, '../test-fixtures/fancy-gamecards.html'),
+      'utf-8',
+    )
+    const cards = parseGameSetCards(html)
+    expect(cards.map((c) => c.name)).toEqual([
+      'Triangle',
+      'Square',
+      'Player',
+      'Line',
+      'Void',
+    ])
   })
 })
 

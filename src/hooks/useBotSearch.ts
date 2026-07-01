@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createApiClient } from '../api/client'
 import { findAppById, loadAppList, searchApps } from '../api/appList'
-import { checkGameHasTradingCards } from '../api/gameCards'
+import { fetchGameSetCards } from '../api/gameCards'
 import { BotSearchService } from '../services/botSearch'
+import type { GameSetCard } from '../services/parseGameCardsHtml'
 import type { SteamApp, BotMatchResult, SearchProgress } from '../types/steam'
 import { REFERENCE_STEAM_ID } from '../utils/steamId'
 
@@ -48,23 +49,31 @@ export function useAppList() {
 export function useGameCardCheck(game: SteamApp | null) {
   const [cardStatus, setCardStatus] = useState<GameCardStatus>('idle')
   const [cardError, setCardError] = useState<string | null>(null)
+  const [gameCards, setGameCards] = useState<GameSetCard[]>([])
 
   useEffect(() => {
     if (!game) {
       setCardStatus('idle')
       setCardError(null)
+      setGameCards([])
       return
     }
 
     let cancelled = false
     setCardStatus('checking')
     setCardError(null)
+    setGameCards([])
 
     const client = createApiClient()
-    checkGameHasTradingCards(client, REFERENCE_STEAM_ID, game.appid)
-      .then((hasCards) => {
+    fetchGameSetCards(client, REFERENCE_STEAM_ID, game.appid)
+      .then((cards) => {
         if (!cancelled) {
-          setCardStatus(hasCards ? 'has-cards' : 'no-cards')
+          if (cards) {
+            setGameCards(cards)
+            setCardStatus('has-cards')
+          } else {
+            setCardStatus('no-cards')
+          }
         }
       })
       .catch((err: unknown) => {
@@ -79,7 +88,7 @@ export function useGameCardCheck(game: SteamApp | null) {
     }
   }, [game])
 
-  return { cardStatus, cardError }
+  return { cardStatus, cardError, gameCards }
 }
 
 export function useBotSearch() {
