@@ -11,7 +11,6 @@ const statusLabels: Record<SearchProgress['status'], string> = {
   paused: 'Paused',
   done: 'Done',
   stopped: 'Stopped',
-  'no-cards': 'No trading cards',
   error: 'Error',
 }
 

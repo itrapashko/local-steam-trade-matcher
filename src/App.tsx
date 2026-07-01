@@ -3,7 +3,7 @@ import { GameSelector } from './components/GameSelector'
 import { BotResultList } from './components/BotResultList'
 import { SearchControls } from './components/SearchControls'
 import { SearchProgressBar } from './components/SearchProgress'
-import { useAppList, useBotSearch } from './hooks/useBotSearch'
+import { useAppList, useBotSearch, useGameCardCheck } from './hooks/useBotSearch'
 import type { SteamApp } from './types/steam'
 import './App.css'
 
@@ -24,6 +24,7 @@ export default function App() {
   } = useBotSearch()
 
   const [game, setGame] = useState<SteamApp | null>(null)
+  const { cardStatus, cardError } = useGameCardCheck(game)
 
   function handleStart() {
     if (!game) {
@@ -60,10 +61,12 @@ export default function App() {
           onSearch={searchApps}
           onSelect={setGame}
           selected={game}
+          cardStatus={cardStatus}
+          cardError={cardError}
         />
 
         <SearchControls
-          canStart={!!game}
+          canStart={!!game && cardStatus === 'has-cards'}
           isSearching={isSearching}
           isPaused={isPaused}
           onStart={handleStart}

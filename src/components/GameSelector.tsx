@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import type { GameCardStatus } from '../hooks/useBotSearch'
 import type { SteamApp } from '../types/steam'
 
 interface GameSelectorProps {
@@ -9,6 +10,8 @@ interface GameSelectorProps {
   onSearch: (query: string) => SteamApp[]
   onSelect: (app: SteamApp) => void
   selected: SteamApp | null
+  cardStatus: GameCardStatus
+  cardError: string | null
 }
 
 export function GameSelector({
@@ -19,6 +22,8 @@ export function GameSelector({
   onSearch,
   onSelect,
   selected,
+  cardStatus,
+  cardError,
 }: GameSelectorProps) {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState<SteamApp[]>([])
@@ -105,6 +110,18 @@ export function GameSelector({
         <p className="selected-game">
           Selected: <strong>{selected.name}</strong> (AppID {selected.appid})
         </p>
+      )}
+      {cardStatus === 'checking' && (
+        <p className="status">Checking for trading cards…</p>
+      )}
+      {cardStatus === 'has-cards' && selected && (
+        <p className="status">This game has Steam trading cards.</p>
+      )}
+      {cardStatus === 'no-cards' && (
+        <p className="error">This game does not have Steam trading cards.</p>
+      )}
+      {cardStatus === 'error' && cardError && (
+        <p className="error">{cardError}</p>
       )}
     </section>
   )

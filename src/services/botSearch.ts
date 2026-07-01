@@ -1,6 +1,6 @@
 import { fetchBots } from '../api/asfBots'
 import type { ApiClient } from '../api/client'
-import { checkGameHasTradingCards, fetchOwnedGameCards } from '../api/gameCards'
+import { fetchOwnedGameCards } from '../api/gameCards'
 import {
   MATCHABLE_FOIL_CARD,
   MATCHABLE_TRADING_CARD,
@@ -70,23 +70,6 @@ export class BotSearchService {
       const total = this.bots.length
       if (total === 0) {
         this.emitProgress('done', null, 0, 0)
-        return
-      }
-
-      const hasCards = await checkGameHasTradingCards(
-        this.client,
-        this.bots[0]!.SteamIDText,
-        options.gameAppId,
-      )
-      if (!hasCards) {
-        this.callbacks.onProgress({
-          checked: 0,
-          total,
-          found: 0,
-          currentBotNickname: null,
-          status: 'no-cards',
-          errorMessage: 'This game does not have Steam trading cards.',
-        })
         return
       }
 

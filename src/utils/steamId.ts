@@ -1,5 +1,8 @@
 export const STEAM_ID64_BASE = 76561197960265728n
 
+/** Public profile used only to load a game's badge/card page (ownership irrelevant). */
+export const REFERENCE_STEAM_ID = '76561199483008583'
+
 export function steamIdToAccountId(steamId: number | string): string {
   const id = BigInt(steamId)
   return (id - STEAM_ID64_BASE).toString()

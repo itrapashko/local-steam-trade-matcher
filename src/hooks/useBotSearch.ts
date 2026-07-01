@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createApiClient } from '../api/client'
 import { findAppById, loadAppList, searchApps } from '../api/appList'
+import { checkGameHasTradingCards } from '../api/gameCards'
 import { BotSearchService } from '../services/botSearch'
 import type { SteamApp, BotMatchResult, SearchProgress } from '../types/steam'
+import { REFERENCE_STEAM_ID } from '../utils/steamId'
+
+export type GameCardStatus = 'idle' | 'checking' | 'has-cards' | 'no-cards' | 'error'
 
 const initialProgress: SearchProgress = {
   checked: 0,
@@ -39,6 +43,43 @@ export function useAppList() {
   }, [])
 
   return { apps, loading, error, searchApps: (q: string) => searchApps(apps, q), findAppById: (id: number) => findAppById(apps, id) }
+}
+
+export function useGameCardCheck(game: SteamApp | null) {
+  const [cardStatus, setCardStatus] = useState<GameCardStatus>('idle')
+  const [cardError, setCardError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!game) {
+      setCardStatus('idle')
+      setCardError(null)
+      return
+    }
+
+    let cancelled = false
+    setCardStatus('checking')
+    setCardError(null)
+
+    const client = createApiClient()
+    checkGameHasTradingCards(client, REFERENCE_STEAM_ID, game.appid)
+      .then((hasCards) => {
+        if (!cancelled) {
+          setCardStatus(hasCards ? 'has-cards' : 'no-cards')
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setCardStatus('error')
+          setCardError(err instanceof Error ? err.message : 'Failed to check trading cards')
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [game])
+
+  return { cardStatus, cardError }
 }
 
 export function useBotSearch() {
