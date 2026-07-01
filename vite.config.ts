@@ -32,11 +32,6 @@ export default defineConfig({
   base: process.env.GITHUB_PAGES ? '/local-steam-trade-matcher/' : '/',
   server: {
     proxy: {
-      '/api/asf': {
-        target: 'https://asf.justarchi.net',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/asf/, ''),
-      },
       '/api/steam': steamProxy,
     },
   },

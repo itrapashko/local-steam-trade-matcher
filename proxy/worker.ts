@@ -1,4 +1,3 @@
-const ASF_ORIGIN = 'https://asf.justarchi.net'
 const STEAM_ORIGIN = 'https://steamcommunity.com'
 
 const CORS_HEADERS: Record<string, string> = {
@@ -15,9 +14,6 @@ function corsResponse(body: BodyInit | null, status = 200, extraHeaders: Record<
 }
 
 function resolveUpstream(pathname: string, search: string): string | null {
-  if (pathname.startsWith('/api/asf/')) {
-    return `${ASF_ORIGIN}${pathname.slice('/api/asf'.length)}${search}`
-  }
   if (pathname.startsWith('/api/steam/')) {
     return `${STEAM_ORIGIN}${pathname.slice('/api/steam'.length)}${search}`
   }

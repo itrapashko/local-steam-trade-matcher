@@ -1,14 +1,15 @@
 # Proxy and CORS
 
-Steam Community and the ASF API do not send CORS headers. The browser cannot call them directly from GitHub Pages.
+Steam Community does not send CORS headers. The browser cannot call it directly from GitHub Pages.
+
+The [ASF Listing API](https://asf.justarchi.net/Api/Listing/Bots) sends `Access-Control-Allow-Origin: *` and is called directly from the app.
 
 ## Development
 
-Vite proxies requests (`vite.config.ts`):
+Vite proxies Steam requests (`vite.config.ts`):
 
 | Path | Upstream |
 |------|----------|
-| `/api/asf/*` | `https://asf.justarchi.net` |
 | `/api/steam/*` | `https://steamcommunity.com` |
 
 For Steam, `Location` headers are rewritten on redirects so the browser stays on `/api/steam`.
@@ -17,9 +18,8 @@ Run `npm run dev` — no separate proxy is required.
 
 ## GitHub Pages
 
-There is no backend on Pages. Requests go to an external CORS proxy with the same paths:
+There is no backend on Pages. Steam requests go to an external CORS proxy:
 
-- `{proxy}/api/asf/*` → `https://asf.justarchi.net/*`
 - `{proxy}/api/steam/*` → `https://steamcommunity.com/*`
 
 The proxy URL is baked into the build via `VITE_PROXY_BASE_URL` (see [deployment.md](deployment.md)).
@@ -40,14 +40,6 @@ npm run deploy
 After deploy the worker is available at:
 
 `https://local-steam-trade-matcher-proxy.<account>.workers.dev`
-
-Smoke test:
-
-```
-https://local-steam-trade-matcher-proxy.<account>.workers.dev/api/asf/Api/Listing/Bots
-```
-
-You should get JSON with the bot list.
 
 The worker follows Steam redirects server-side (`redirect: 'follow'`), so the browser never needs to hit `steamcommunity.com` directly.
 

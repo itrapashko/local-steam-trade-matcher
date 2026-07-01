@@ -7,7 +7,7 @@ A client-side web app for finding bots that own trading cards for a selected gam
 ## Features
 
 - Pick a game by AppID or name (autocomplete)
-- Search the [ASF Listing API](https://asf.justarchi.net/Api/Listing/Bots) bot list
+- Search the [ASF Listing](https://asf.justarchi.net/STM) bot list
 - Live progress with pause and resume
 - Owned game cards for each matching bot
 

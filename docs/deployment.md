@@ -19,7 +19,7 @@ On push to `main`, the [`.github/workflows/deploy-pages.yml`](../.github/workflo
 |------|--------|
 | `VITE_PROXY_BASE_URL` | Cloudflare Worker URL with no trailing `/` |
 
-Without this variable the site loads, but bot search will not work. See [proxy.md](proxy.md).
+Without this variable the site loads, but loading game cards for bots will not work. See [proxy.md](proxy.md).
 
 After adding or changing the variable, redeploy (push to `main` or **Actions → Deploy to GitHub Pages → Run workflow**).
 
@@ -27,7 +27,7 @@ After adding or changing the variable, redeploy (push to `main` or **Actions →
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Dev server with Vite proxy |
+| `npm run dev` | Dev server with Vite Steam proxy |
 | `npm run build` | Production build |
 | `npm run build:pages` | Build for GitHub Pages (`base`: `/local-steam-trade-matcher/`) |
 | `npm run preview` | Preview production build |
