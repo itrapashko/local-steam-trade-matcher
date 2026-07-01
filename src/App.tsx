@@ -7,6 +7,8 @@ import { useAppList, useBotSearch } from './hooks/useBotSearch'
 import type { SteamApp } from './types/steam'
 import './App.css'
 
+const GITHUB_REPO_URL = 'https://github.com/itrapashko/local-steam-trade-matcher'
+
 export default function App() {
   const { apps, loading, error, searchApps } = useAppList()
   const {
@@ -39,6 +41,14 @@ export default function App() {
             Find ASF bots with trading cards for a selected game
           </p>
         </div>
+        <a
+          className="header-link"
+          href={GITHUB_REPO_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
       </header>
 
       <main className="app-main">

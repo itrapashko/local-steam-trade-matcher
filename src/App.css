@@ -26,6 +26,11 @@
   font-size: 0.95rem;
 }
 
+.header-link {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
 .app-main {
   display: flex;
   flex-direction: column;
