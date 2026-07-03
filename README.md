@@ -2,14 +2,16 @@
 
 **Live site:** https://itrapashko.github.io/local-steam-trade-matcher/
 
-A client-side web app for finding bots that own trading cards for a selected game.
+Trade your duplicate Steam trading cards with bots for a selected game. A local
+alternative to [Steam Trade Matcher](https://asf.justarchi.net/STM) without
+queues.
 
 ## Features
 
 - Pick a game by AppID or name (autocomplete)
-- Search the [ASF Listing](https://asf.justarchi.net/STM) bot list
+- Find trade partners via the [ASF/STM](https://asf.justarchi.net/STM) bot list
 - Live progress with pause and resume
-- Owned game cards for each matching bot
+- Owned game cards for each match
 
 ## Quick start
 
