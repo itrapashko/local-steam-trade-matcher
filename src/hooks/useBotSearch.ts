@@ -4,19 +4,17 @@ import { findAppById, loadAppList, searchApps } from '../api/appList'
 import { fetchGameSetCards } from '../api/gameCards'
 import { BotSearchService } from '../services/botSearch'
 import type { GameSetCard } from '../services/parseGameCardsHtml'
-import type { SteamApp, BotMatchResult, SearchProgress } from '../types/steam'
+import {
+  applyBotSearchEvent,
+  initialSearchProgress,
+  type SteamApp,
+  type BotMatchResult,
+  type BotSearchEvent,
+  type SearchProgress,
+} from '../types/steam'
 import { REFERENCE_STEAM_ID } from '../utils/steamId'
 
 export type GameCardStatus = 'idle' | 'checking' | 'has-cards' | 'no-cards' | 'error'
-
-const initialProgress: SearchProgress = {
-  checked: 0,
-  total: 0,
-  found: 0,
-  currentBotNickname: null,
-  status: 'idle',
-  errorMessage: null,
-}
 
 export function useAppList() {
   const [apps, setApps] = useState<SteamApp[]>([])
@@ -93,18 +91,22 @@ export function useGameCardCheck(game: SteamApp | null) {
 
 export function useBotSearch() {
   const serviceRef = useRef<BotSearchService | null>(null)
-  const [progress, setProgress] = useState<SearchProgress>(initialProgress)
+  const [progress, setProgress] = useState<SearchProgress>(initialSearchProgress)
   const [results, setResults] = useState<BotMatchResult[]>([])
   const [selectedGame, setSelectedGame] = useState<SteamApp | null>(null)
+
+  const onEvent = useCallback((event: BotSearchEvent) => {
+    setProgress((prev) => applyBotSearchEvent(prev, event))
+  }, [])
 
   const startSearch = useCallback(async (game: SteamApp) => {
     setSelectedGame(game)
     setResults([])
-    setProgress({ ...initialProgress, status: 'loading-bots' })
+    setProgress({ ...initialSearchProgress, status: 'loading-bots' })
 
     const client = createApiClient()
     const service = new BotSearchService(client, {
-      onProgress: setProgress,
+      onEvent,
       onMatch: (match) => {
         setResults((prev) => [...prev, match])
       },
@@ -112,7 +114,7 @@ export function useBotSearch() {
 
     serviceRef.current = service
     await service.start({ gameAppId: game.appid })
-  }, [])
+  }, [onEvent])
 
   const pause = useCallback(() => serviceRef.current?.pause(), [])
   const resume = useCallback(() => serviceRef.current?.resume(), [])

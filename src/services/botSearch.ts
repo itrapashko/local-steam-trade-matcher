@@ -6,13 +6,13 @@ import {
   MATCHABLE_TRADING_CARD,
   type AsfBot,
 } from '../types/asf'
-import type { BotMatchResult, SearchProgress } from '../types/steam'
+import type { BotMatchResult, BotSearchEvent } from '../types/steam'
 import { totalCardCount } from './parseGameCardsHtml'
 import { DEFAULT_RATE_LIMIT_MS, delay } from '../utils/rateLimit'
 import { buildGameCardsUrl } from '../utils/steamId'
 
 export interface BotSearchCallbacks {
-  onProgress: (progress: SearchProgress) => void
+  onEvent: (event: BotSearchEvent) => void
   onMatch: (result: BotMatchResult) => void
 }
 
@@ -35,7 +35,7 @@ export class BotSearchService {
 
   pause(): void {
     this.paused = true
-    this.emitProgress('paused')
+    this.emitEvent({ kind: 'paused' })
   }
 
   resume(): void {
@@ -43,7 +43,7 @@ export class BotSearchService {
       return
     }
     this.paused = false
-    this.emitProgress('searching')
+    this.emitEvent({ kind: 'resumed' })
     this.pauseResolver?.()
     this.pauseResolver = null
   }
@@ -53,7 +53,7 @@ export class BotSearchService {
     this.paused = false
     this.pauseResolver?.()
     this.pauseResolver = null
-    this.emitProgress('stopped')
+    this.emitEvent({ kind: 'stopped' })
   }
 
   async start(options: BotSearchOptions): Promise<void> {
@@ -63,20 +63,28 @@ export class BotSearchService {
     this.found = 0
 
     try {
-      this.emitProgress('loading-bots', null, 0, 0)
+      await this.emitEventAwaitingResume({ kind: 'loading-bots' })
       const allBots = await fetchBots(this.client)
       this.bots = sortBotsByCardCount(filterBots(allBots))
 
       const total = this.bots.length
       if (total === 0) {
-        this.emitProgress('done', null, 0, 0)
+        await this.emitEventAwaitingResume({ kind: 'done', total: 0, found: 0 })
         return
       }
 
-      this.emitProgress('searching', null, 0, total)
+      await this.emitEventAwaitingResume({
+        kind: 'searching',
+        checked: 0,
+        total,
+        found: 0,
+        currentBotNickname: null,
+      })
+      if (this.aborted) {
+        return
+      }
 
       for (let i = this.currentIndex; i < this.bots.length; i++) {
-        await this.waitIfPaused()
         if (this.aborted) {
           return
         }
@@ -86,13 +94,26 @@ export class BotSearchService {
         const steamId = bot.SteamIDText
         const gameCardsUrl = `${buildGameCardsUrl(steamId, options.gameAppId)}?l=english`
         console.log(`[STM Search] ${bot.Nickname} — ${gameCardsUrl}`)
-        this.emitProgress('searching', bot.Nickname, i, total)
+        await this.emitEventAwaitingResume({
+          kind: 'searching',
+          checked: i + 1,
+          total,
+          found: this.found,
+          currentBotNickname: bot.Nickname,
+        })
+        if (this.aborted) {
+          return
+        }
 
         const cards = await fetchOwnedGameCards(
           this.client,
           steamId,
           options.gameAppId,
         )
+
+        if (this.aborted) {
+          return
+        }
 
         if (totalCardCount(cards) > 0) {
           this.found += 1
@@ -101,28 +122,32 @@ export class BotSearchService {
             cards,
             gameAppId: options.gameAppId,
           })
+          await this.emitEventAwaitingResume({
+            kind: 'searching',
+            checked: i + 1,
+            total,
+            found: this.found,
+            currentBotNickname: bot.Nickname,
+          })
+          if (this.aborted) {
+            return
+          }
         }
-
-        this.emitProgress('searching', bot.Nickname, i + 1, total)
 
         if (i < this.bots.length - 1 && !this.aborted) {
           await delay(options.rateLimitMs ?? DEFAULT_RATE_LIMIT_MS)
+          if (this.aborted) {
+            return
+          }
         }
       }
 
       if (!this.aborted) {
-        this.emitProgress('done', null, total, total)
+        await this.emitEventAwaitingResume({ kind: 'done', total, found: this.found })
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
-      this.callbacks.onProgress({
-        checked: this.currentIndex,
-        total: this.bots.length,
-        found: this.found,
-        currentBotNickname: null,
-        status: 'error',
-        errorMessage: message,
-      })
+      this.emitEvent({ kind: 'error', message })
     }
   }
 
@@ -137,20 +162,16 @@ export class BotSearchService {
     })
   }
 
-  private emitProgress(
-    status: SearchProgress['status'],
-    currentBotNickname: string | null = null,
-    checked = this.currentIndex,
-    total = this.bots.length,
-  ): void {
-    this.callbacks.onProgress({
-      checked,
-      total,
-      found: this.found,
-      currentBotNickname,
-      status,
-      errorMessage: null,
-    })
+  private emitEvent(event: BotSearchEvent): void {
+    this.callbacks.onEvent(event)
+  }
+
+  private async emitEventAwaitingResume(event: BotSearchEvent): Promise<void> {
+    await this.waitIfPaused()
+    if (this.aborted) {
+      return
+    }
+    this.emitEvent(event)
   }
 }
 

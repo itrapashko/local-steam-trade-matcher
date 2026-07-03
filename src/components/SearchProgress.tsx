@@ -42,7 +42,7 @@ export function SearchProgressBar({ progress }: SearchProgressProps) {
         <p className="current-bot">Checking: {currentBotNickname}</p>
       )}
       {errorMessage && (
-        <p className={status === 'error' ? 'error' : 'notice'}>{errorMessage}</p>
+        <p className="error">{errorMessage}</p>
       )}
     </section>
   )

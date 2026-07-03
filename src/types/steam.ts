@@ -25,10 +25,64 @@ export type SearchStatus =
   | 'error'
 
 export interface SearchProgress {
+  status: SearchStatus
   checked: number
   total: number
   found: number
   currentBotNickname: string | null
-  status: SearchStatus
   errorMessage: string | null
+}
+
+export const initialSearchProgress: SearchProgress = {
+  status: 'idle',
+  checked: 0,
+  total: 0,
+  found: 0,
+  currentBotNickname: null,
+  errorMessage: null,
+}
+
+export type BotSearchEvent =
+  | { kind: 'loading-bots' }
+  | { kind: 'searching'; checked: number; total: number; found: number; currentBotNickname: string | null }
+  | { kind: 'paused' }
+  | { kind: 'resumed' }
+  | { kind: 'done'; total: number; found: number }
+  | { kind: 'stopped' }
+  | { kind: 'error'; message: string }
+
+export function applyBotSearchEvent(
+  prev: SearchProgress,
+  event: BotSearchEvent,
+): SearchProgress {
+  switch (event.kind) {
+    case 'loading-bots':
+      return { ...initialSearchProgress, status: 'loading-bots' }
+    case 'searching':
+      return {
+        status: 'searching',
+        checked: event.checked,
+        total: event.total,
+        found: event.found,
+        currentBotNickname: event.currentBotNickname,
+        errorMessage: null,
+      }
+    case 'paused':
+      return { ...prev, status: 'paused' }
+    case 'resumed':
+      return { ...prev, status: 'searching' }
+    case 'done':
+      return {
+        status: 'done',
+        checked: event.total,
+        total: event.total,
+        found: event.found,
+        currentBotNickname: null,
+        errorMessage: null,
+      }
+    case 'stopped':
+      return { ...prev, status: 'stopped', currentBotNickname: null, errorMessage: null }
+    case 'error':
+      return { ...prev, status: 'error', errorMessage: event.message }
+  }
 }
