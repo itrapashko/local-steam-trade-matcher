@@ -74,6 +74,23 @@ describe('parseGameSetCards', () => {
       'Void',
     ])
   })
+
+  it('parses foil card set from real Steam layout', () => {
+    const html = readFileSync(
+      join(fixtureDir, '../test-fixtures/spintires-foil-gamecards.html'),
+      'utf-8',
+    )
+    const cards = parseGameSetCards(html)
+    expect(cards.map((c) => c.name)).toEqual([
+      'I Love My Winch',
+      'Into the Mud',
+      'Loading Logs',
+      'Saving the Day',
+      'Fuel Demon',
+      'Recovery Giant',
+      'Monster in the Forest',
+    ])
+  })
 })
 
 describe('parseGameCardsHtml', () => {
@@ -115,6 +132,16 @@ describe('parseGameCardsHtml', () => {
     expect(cards.map((c) => c.name)).toEqual(['Square', 'Player', 'Line'])
     expect(cards.map((c) => c.quantity)).toEqual([1, 2, 1])
   })
+
+  it('parses foil cards from real Steam layout', () => {
+    const html = readFileSync(
+      join(fixtureDir, '../test-fixtures/spintires-foil-gamecards.html'),
+      'utf-8',
+    )
+    const cards = parseGameCardsHtml(html)
+    expect(cards).toHaveLength(1)
+    expect(cards[0]).toMatchObject({ name: 'Loading Logs', quantity: 1 })
+  })
 })
 
 describe('totalCardCount', () => {
@@ -146,6 +173,14 @@ describe('gameHasTradingCards', () => {
   it('returns true for real Steam gamecards layout', () => {
     const html = readFileSync(
       join(fixtureDir, '../test-fixtures/fancy-gamecards.html'),
+      'utf-8',
+    )
+    expect(gameHasTradingCards(html)).toBe(true)
+  })
+
+  it('returns true for foil gamecards layout', () => {
+    const html = readFileSync(
+      join(fixtureDir, '../test-fixtures/spintires-foil-gamecards.html'),
       'utf-8',
     )
     expect(gameHasTradingCards(html)).toBe(true)

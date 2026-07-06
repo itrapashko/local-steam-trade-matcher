@@ -6,7 +6,7 @@ import {
   MATCHABLE_TRADING_CARD,
   type AsfBot,
 } from '../types/asf'
-import type { BotMatchResult, BotSearchEvent } from '../types/steam'
+import type { BotMatchResult, BotSearchEvent, CardType } from '../types/steam'
 import { totalCardCount } from './parseGameCardsHtml'
 import { DEFAULT_RATE_LIMIT_MS, delay } from '../utils/rateLimit'
 import { buildGameCardsUrl } from '../utils/steamId'
@@ -18,6 +18,7 @@ export interface BotSearchCallbacks {
 
 export interface BotSearchOptions {
   gameAppId: number
+  cardType: CardType
   rateLimitMs?: number
 }
 
@@ -65,7 +66,7 @@ export class BotSearchService {
     try {
       await this.emitEventAwaitingResume({ kind: 'loading-bots' })
       const allBots = await fetchBots(this.client)
-      this.bots = sortBotsByCardCount(filterBots(allBots))
+      this.bots = sortBotsByCardCount(filterBots(allBots, options.cardType))
 
       const total = this.bots.length
       if (total === 0) {
@@ -92,7 +93,7 @@ export class BotSearchService {
         this.currentIndex = i
         const bot = this.bots[i]!
         const steamId = bot.SteamIDText
-        const gameCardsUrl = `${buildGameCardsUrl(steamId, options.gameAppId)}?l=english`
+        const gameCardsUrl = buildGameCardsUrl(steamId, options.gameAppId, options.cardType)
         console.log(`[STM Search] ${bot.Nickname} — ${gameCardsUrl}`)
         await this.emitEventAwaitingResume({
           kind: 'searching',
@@ -109,6 +110,7 @@ export class BotSearchService {
           this.client,
           steamId,
           options.gameAppId,
+          options.cardType,
         )
 
         if (this.aborted) {
@@ -121,6 +123,7 @@ export class BotSearchService {
             bot,
             cards,
             gameAppId: options.gameAppId,
+            cardType: options.cardType,
           })
           await this.emitEventAwaitingResume({
             kind: 'searching',
@@ -175,15 +178,16 @@ export class BotSearchService {
   }
 }
 
-export function filterBots(bots: AsfBot[]): AsfBot[] {
+export function filterBots(bots: AsfBot[], cardType: CardType): AsfBot[] {
+  const matchableType =
+    cardType === 'foil' ? MATCHABLE_FOIL_CARD : MATCHABLE_TRADING_CARD
+
   return bots.filter((bot) => {
     if (bot.TotalGamesCount === 0) {
       return false
     }
     const types = bot.MatchableTypes ?? []
-    return (
-      types.includes(MATCHABLE_TRADING_CARD) || types.includes(MATCHABLE_FOIL_CARD)
-    )
+    return types.includes(matchableType)
   })
 }
 

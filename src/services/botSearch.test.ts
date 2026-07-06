@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { MATCHABLE_TRADING_CARD, type AsfBot } from '../types/asf'
+import { MATCHABLE_FOIL_CARD, MATCHABLE_TRADING_CARD, type AsfBot } from '../types/asf'
 import {
   applyBotSearchEvent,
   initialSearchProgress,
@@ -73,8 +73,22 @@ describe('applyBotSearchEvent', () => {
 })
 
 describe('filterBots', () => {
-  it('keeps bots with trading or foil cards', () => {
-    expect(filterBots([makeBot(), makeBot({ MatchableTypes: [5] })])).toHaveLength(2)
+  it('keeps only trading-card bots when searching trading cards', () => {
+    expect(
+      filterBots(
+        [makeBot(), makeBot({ MatchableTypes: [MATCHABLE_FOIL_CARD] })],
+        'regular',
+      ),
+    ).toHaveLength(1)
+  })
+
+  it('keeps only foil-card bots when searching foil cards', () => {
+    expect(
+      filterBots(
+        [makeBot(), makeBot({ MatchableTypes: [MATCHABLE_FOIL_CARD] })],
+        'foil',
+      ),
+    ).toHaveLength(1)
   })
 
   it('removes bots without card types or zero games', () => {
@@ -82,7 +96,7 @@ describe('filterBots', () => {
       makeBot({ MatchableTypes: [2, 4] }),
       makeBot({ TotalGamesCount: 0 }),
     ]
-    expect(filterBots(bots)).toHaveLength(0)
+    expect(filterBots(bots, 'regular')).toHaveLength(0)
   })
 })
 
@@ -129,7 +143,7 @@ describe('BotSearchService pause', () => {
       onMatch: () => {},
     })
 
-    void service.start({ gameAppId: 570 })
+    void service.start({ gameAppId: 570, cardType: 'regular' })
 
     await vi.waitFor(() => expect(tracker.getState().status).toBe('searching'))
     await vi.waitFor(() => expect(tracker.getState().checked).toBe(1))
@@ -168,7 +182,7 @@ describe('BotSearchService pause', () => {
       onMatch: () => {},
     })
 
-    const startPromise = service.start({ gameAppId: 570, rateLimitMs: 0 })
+    const startPromise = service.start({ gameAppId: 570, cardType: 'regular', rateLimitMs: 0 })
 
     await vi.waitFor(() =>
       expect(tracker.getState()).toMatchObject({ checked: 2, currentBotNickname: 'Bot2' }),
@@ -203,7 +217,7 @@ describe('BotSearchService pause', () => {
       onMatch: () => {},
     })
 
-    const startPromise = service.start({ gameAppId: 570, rateLimitMs: 0 })
+    const startPromise = service.start({ gameAppId: 570, cardType: 'regular', rateLimitMs: 0 })
 
     await vi.waitFor(() => expect(fetchOwnedGameCards).toHaveBeenCalled())
 

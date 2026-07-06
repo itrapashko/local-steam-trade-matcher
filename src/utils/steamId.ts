@@ -1,3 +1,5 @@
+import type { CardType } from '../types/steam'
+
 export const STEAM_ID64_BASE = 76561197960265728n
 
 /** Public profile used only to load a game's badge/card page (ownership irrelevant). */
@@ -13,8 +15,16 @@ export function buildTradeOfferUrl(steamId: number | string, tradeToken: string)
   return `https://steamcommunity.com/tradeoffer/new/?partner=${partner}&token=${tradeToken}`
 }
 
-export function buildGameCardsUrl(steamId: number | string, appId: number): string {
-  return `https://steamcommunity.com/profiles/${steamId}/gamecards/${appId}/`
+export function buildGameCardsUrl(
+  steamId: number | string,
+  appId: number,
+  cardType: CardType = 'regular',
+): string {
+  const params = new URLSearchParams({ l: 'english' })
+  if (cardType === 'foil') {
+    params.set('border', '1')
+  }
+  return `https://steamcommunity.com/profiles/${steamId}/gamecards/${appId}/?${params.toString()}`
 }
 
 export function buildInventoryUrl(steamId: number | string): string {

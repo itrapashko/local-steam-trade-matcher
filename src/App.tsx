@@ -26,19 +26,22 @@ export default function App() {
   } = useBotSearch()
 
   const [game, setGame] = useState<SteamApp | null>(null)
-  const { cardStatus, cardError, gameCards } = useGameCardCheck(game)
   const {
+    cardType,
+    setCardType,
     anyModeOnly,
     setAnyModeOnly,
     selectedCardNames,
     setSelectedCardNames,
   } = useSearchFilters(game?.appid ?? null)
+  const { cardStatus, cardError, gameCards, showCardFilters, cardsLoading } =
+    useGameCardCheck(game, cardType)
 
   function handleStart() {
     if (!game) {
       return
     }
-    void startSearch(game)
+    void startSearch(game, cardType)
   }
 
   return (
@@ -74,10 +77,14 @@ export default function App() {
           cardError={cardError}
         />
 
-        {cardStatus === 'has-cards' && game && (
+        {game && (
           <SearchSettings
             game={game}
             gameCards={gameCards}
+            cardType={cardType}
+            onCardTypeChange={setCardType}
+            cardTypeDisabled={isSearching}
+            showCardFilters={showCardFilters}
             anyModeOnly={anyModeOnly}
             onAnyModeOnlyChange={setAnyModeOnly}
             selectedCardNames={selectedCardNames}
@@ -86,7 +93,7 @@ export default function App() {
         )}
 
         <SearchControls
-          canStart={!!game && cardStatus === 'has-cards'}
+          canStart={!!game && cardStatus === 'has-cards' && !cardsLoading}
           isSearching={isSearching}
           isPaused={isPaused}
           onStart={handleStart}

@@ -27,6 +27,7 @@ function makeResult(
     bot: makeBot(bot),
     cards: cards.map((c) => ({ ...c, imageUrl: null })),
     gameAppId: 440,
+    cardType: 'regular',
   }
 }
 

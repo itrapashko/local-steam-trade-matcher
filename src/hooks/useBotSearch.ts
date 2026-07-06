@@ -7,6 +7,7 @@ import type { GameSetCard } from '../services/parseGameCardsHtml'
 import {
   applyBotSearchEvent,
   initialSearchProgress,
+  type CardType,
   type SteamApp,
   type BotMatchResult,
   type BotSearchEvent,
@@ -44,32 +45,44 @@ export function useAppList() {
   return { apps, loading, error, searchApps: (q: string) => searchApps(apps, q), findAppById: (id: number) => findAppById(apps, id) }
 }
 
-export function useGameCardCheck(game: SteamApp | null) {
+export function useGameCardCheck(game: SteamApp | null, cardType: CardType) {
   const [cardStatus, setCardStatus] = useState<GameCardStatus>('idle')
   const [cardError, setCardError] = useState<string | null>(null)
   const [gameCards, setGameCards] = useState<GameSetCard[]>([])
+  const [confirmedAppId, setConfirmedAppId] = useState<number | null>(null)
+  const [cardsLoading, setCardsLoading] = useState(false)
 
   useEffect(() => {
     if (!game) {
       setCardStatus('idle')
       setCardError(null)
       setGameCards([])
+      setConfirmedAppId(null)
+      setCardsLoading(false)
       return
     }
 
     let cancelled = false
-    setCardStatus('checking')
-    setCardError(null)
-    setGameCards([])
+    const preserveUi = confirmedAppId === game.appid
+
+    if (!preserveUi) {
+      setCardStatus('checking')
+      setCardError(null)
+      setGameCards([])
+    }
+
+    setCardsLoading(true)
 
     const client = createApiClient()
-    fetchGameSetCards(client, REFERENCE_STEAM_ID, game.appid)
+    fetchGameSetCards(client, REFERENCE_STEAM_ID, game.appid, cardType)
       .then((cards) => {
         if (!cancelled) {
           if (cards) {
             setGameCards(cards)
             setCardStatus('has-cards')
+            setConfirmedAppId(game.appid)
           } else {
+            setGameCards([])
             setCardStatus('no-cards')
           }
         }
@@ -80,13 +93,20 @@ export function useGameCardCheck(game: SteamApp | null) {
           setCardError(err instanceof Error ? err.message : 'Failed to check trading cards')
         }
       })
+      .finally(() => {
+        if (!cancelled) {
+          setCardsLoading(false)
+        }
+      })
 
     return () => {
       cancelled = true
     }
-  }, [game])
+  }, [game, cardType])
 
-  return { cardStatus, cardError, gameCards }
+  const showCardFilters = game != null && confirmedAppId === game.appid
+
+  return { cardStatus, cardError, gameCards, showCardFilters, cardsLoading }
 }
 
 export function useBotSearch() {
@@ -99,7 +119,7 @@ export function useBotSearch() {
     setProgress((prev) => applyBotSearchEvent(prev, event))
   }, [])
 
-  const startSearch = useCallback(async (game: SteamApp) => {
+  const startSearch = useCallback(async (game: SteamApp, cardType: CardType) => {
     setSelectedGame(game)
     setResults([])
     setProgress({ ...initialSearchProgress, status: 'loading-bots' })
@@ -113,7 +133,7 @@ export function useBotSearch() {
     })
 
     serviceRef.current = service
-    await service.start({ gameAppId: game.appid })
+    await service.start({ gameAppId: game.appid, cardType })
   }, [onEvent])
 
   const pause = useCallback(() => serviceRef.current?.pause(), [])

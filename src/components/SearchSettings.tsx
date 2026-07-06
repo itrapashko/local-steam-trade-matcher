@@ -1,10 +1,14 @@
-import type { SteamApp } from '../types/steam'
+import type { CardType, SteamApp } from '../types/steam'
 import type { FilterCardOption } from '../utils/filterResults'
 import { ResultFilters } from './ResultFilters'
 
 interface SearchSettingsProps {
   game: SteamApp
   gameCards: FilterCardOption[]
+  cardType: CardType
+  onCardTypeChange: (value: CardType) => void
+  cardTypeDisabled: boolean
+  showCardFilters: boolean
   anyModeOnly: boolean
   onAnyModeOnlyChange: (value: boolean) => void
   selectedCardNames: string[]
@@ -14,6 +18,10 @@ interface SearchSettingsProps {
 export function SearchSettings({
   game,
   gameCards,
+  cardType,
+  onCardTypeChange,
+  cardTypeDisabled,
+  showCardFilters,
   anyModeOnly,
   onAnyModeOnlyChange,
   selectedCardNames,
@@ -23,6 +31,10 @@ export function SearchSettings({
     <section className="panel">
       <h2>Search settings</h2>
       <ResultFilters
+        cardType={cardType}
+        onCardTypeChange={onCardTypeChange}
+        cardTypeDisabled={cardTypeDisabled}
+        showCardFilters={showCardFilters}
         anyModeOnly={anyModeOnly}
         onAnyModeOnlyChange={onAnyModeOnlyChange}
         cards={gameCards}

@@ -206,6 +206,11 @@
   margin-bottom: 0.75rem;
 }
 
+.filter-toggle.disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .filter-toggle {
   display: inline-flex;
   align-items: center;

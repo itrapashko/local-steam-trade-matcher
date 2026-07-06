@@ -1,6 +1,12 @@
+import type { CardType } from '../types/steam'
 import type { FilterCardOption } from '../utils/filterResults'
+import { CardTypeSelector } from './CardTypeSelector'
 
 interface ResultFiltersProps {
+  cardType: CardType
+  onCardTypeChange: (value: CardType) => void
+  cardTypeDisabled: boolean
+  showCardFilters: boolean
   anyModeOnly: boolean
   onAnyModeOnlyChange: (value: boolean) => void
   cards: FilterCardOption[]
@@ -20,6 +26,10 @@ function CheckIcon() {
 }
 
 export function ResultFilters({
+  cardType,
+  onCardTypeChange,
+  cardTypeDisabled,
+  showCardFilters,
   anyModeOnly,
   onAnyModeOnlyChange,
   cards,
@@ -40,65 +50,75 @@ export function ResultFilters({
 
   return (
     <div className="result-filters">
-      <label className="filter-toggle">
-        <input
-          type="checkbox"
-          className="filter-toggle-input"
-          checked={anyModeOnly}
-          onChange={(e) => onAnyModeOnlyChange(e.target.checked)}
-        />
-        <span className="filter-toggle-track" aria-hidden>
-          <span className="filter-toggle-thumb" />
-        </span>
-        <span className="filter-toggle-label">
-          Only bots with <span className="trade-mode trade-mode-any">Any</span> trade mode
-        </span>
-      </label>
+      <CardTypeSelector
+        value={cardType}
+        onChange={onCardTypeChange}
+        disabled={cardTypeDisabled}
+      />
 
-      {cards.length > 0 && (
-        <fieldset className="card-filter">
-          <legend>Filter by cards</legend>
-          <p className="filter-hint">
-            Show bots that have at least one selected card.
-            {selectedCardNames.length > 0 && (
-              <button
-                type="button"
-                className="filter-clear"
-                onClick={clearCardSelection}
-              >
-                Clear selection
-              </button>
-            )}
-          </p>
-          <div className="card-filter-grid">
-            {cards.map((card) => {
-              const selected = selectedCardNames.includes(card.name)
-              return (
-                <button
-                  key={card.name}
-                  type="button"
-                  className={`card-filter-tile${selected ? ' selected' : ''}`}
-                  aria-pressed={selected}
-                  onClick={() => toggleCard(card.name)}
-                >
-                  <span className="card-filter-tile-check" aria-hidden>
-                    <CheckIcon />
-                  </span>
-                  {card.imageUrl ? (
-                    <img
-                      src={card.imageUrl}
-                      alt=""
-                      className="card-filter-tile-image"
-                    />
-                  ) : (
-                    <span className="card-filter-tile-placeholder" aria-hidden />
-                  )}
-                  <span className="card-filter-tile-name">{card.name}</span>
-                </button>
-              )
-            })}
-          </div>
-        </fieldset>
+      {showCardFilters && (
+        <>
+          <label className="filter-toggle">
+            <input
+              type="checkbox"
+              className="filter-toggle-input"
+              checked={anyModeOnly}
+              onChange={(e) => onAnyModeOnlyChange(e.target.checked)}
+            />
+            <span className="filter-toggle-track" aria-hidden>
+              <span className="filter-toggle-thumb" />
+            </span>
+            <span className="filter-toggle-label">
+              Only bots with <span className="trade-mode trade-mode-any">Any</span> trade mode
+            </span>
+          </label>
+
+          {cards.length > 0 && (
+            <fieldset className="card-filter">
+              <legend>Filter by cards</legend>
+              <p className="filter-hint">
+                Show bots that have at least one selected card.
+                {selectedCardNames.length > 0 && (
+                  <button
+                    type="button"
+                    className="filter-clear"
+                    onClick={clearCardSelection}
+                  >
+                    Clear selection
+                  </button>
+                )}
+              </p>
+              <div className="card-filter-grid">
+                {cards.map((card) => {
+                  const selected = selectedCardNames.includes(card.name)
+                  return (
+                    <button
+                      key={card.name}
+                      type="button"
+                      className={`card-filter-tile${selected ? ' selected' : ''}`}
+                      aria-pressed={selected}
+                      onClick={() => toggleCard(card.name)}
+                    >
+                      <span className="card-filter-tile-check" aria-hidden>
+                        <CheckIcon />
+                      </span>
+                      {card.imageUrl ? (
+                        <img
+                          src={card.imageUrl}
+                          alt=""
+                          className="card-filter-tile-image"
+                        />
+                      ) : (
+                        <span className="card-filter-tile-placeholder" aria-hidden />
+                      )}
+                      <span className="card-filter-tile-name">{card.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </fieldset>
+          )}
+        </>
       )}
     </div>
   )

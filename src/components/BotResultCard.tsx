@@ -13,7 +13,7 @@ interface BotResultCardProps {
 }
 
 export function BotResultCard({ result }: BotResultCardProps) {
-  const { bot, cards, gameAppId } = result
+  const { bot, cards, gameAppId, cardType } = result
   const steamId = bot.SteamIDText
   const avatarUrl = buildAvatarUrl(bot.AvatarHash)
   const cardTotal = totalCardCount(cards)
@@ -37,7 +37,7 @@ export function BotResultCard({ result }: BotResultCardProps) {
           </div>
           <div className="bot-links">
             <a
-              href={buildGameCardsUrl(steamId, gameAppId)}
+              href={buildGameCardsUrl(steamId, gameAppId, cardType)}
               target="_blank"
               rel="noreferrer"
             >

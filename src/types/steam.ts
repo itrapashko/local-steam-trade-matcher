@@ -1,3 +1,5 @@
+export type CardType = 'regular' | 'foil'
+
 export interface OwnedGameCard {
   name: string
   quantity: number
@@ -13,6 +15,7 @@ export interface BotMatchResult {
   bot: import('./asf').AsfBot
   cards: OwnedGameCard[]
   gameAppId: number
+  cardType: CardType
 }
 
 export type SearchStatus =
