@@ -10,6 +10,7 @@ import type { SteamApp } from './types/steam'
 import './App.css'
 
 const GITHUB_REPO_URL = 'https://github.com/itrapashko/local-steam-trade-matcher'
+const ASF_STM_URL = 'https://asf.justarchi.net/STM'
 
 export default function App() {
   const { apps, loading, error, searchApps } = useAppList()
@@ -54,14 +55,24 @@ export default function App() {
             game. A local alternative to Steam Trade Matcher without queues.
           </p>
         </div>
-        <a
-          className="header-link"
-          href={GITHUB_REPO_URL}
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
+        <div className="header-links">
+          <a
+            className="header-link"
+            href={GITHUB_REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          <a
+            className="header-link"
+            href={ASF_STM_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Bot data
+          </a>
+        </div>
       </header>
 
       <main className="app-main">
@@ -112,12 +123,6 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <p>
-          Bot data:{' '}
-          <a href="https://asf.justarchi.net/Api/Listing/Bots" target="_blank" rel="noreferrer">
-            ASF Listing API
-          </a>
-        </p>
         {selectedGame && progress.status === 'done' && (
           <p>Search for {selectedGame.name} finished.</p>
         )}

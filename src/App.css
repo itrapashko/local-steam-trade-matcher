@@ -26,8 +26,13 @@
   font-size: 0.95rem;
 }
 
-.header-link {
+.header-links {
+  display: flex;
+  gap: 1rem;
   flex-shrink: 0;
+}
+
+.header-link {
   font-size: 0.9rem;
 }
 
