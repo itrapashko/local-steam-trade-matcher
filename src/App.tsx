@@ -17,7 +17,6 @@ export default function App() {
   const {
     progress,
     results,
-    selectedGame,
     startSearch,
     pause,
     resume,
@@ -121,12 +120,6 @@ export default function App() {
           selectedCardNames={selectedCardNames}
         />
       </main>
-
-      <footer className="app-footer">
-        {selectedGame && progress.status === 'done' && (
-          <p>Search for {selectedGame.name} finished.</p>
-        )}
-      </footer>
     </div>
   )
 }

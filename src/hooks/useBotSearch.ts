@@ -113,14 +113,12 @@ export function useBotSearch() {
   const serviceRef = useRef<BotSearchService | null>(null)
   const [progress, setProgress] = useState<SearchProgress>(initialSearchProgress)
   const [results, setResults] = useState<BotMatchResult[]>([])
-  const [selectedGame, setSelectedGame] = useState<SteamApp | null>(null)
 
   const onEvent = useCallback((event: BotSearchEvent) => {
     setProgress((prev) => applyBotSearchEvent(prev, event))
   }, [])
 
   const startSearch = useCallback(async (game: SteamApp, cardType: CardType) => {
-    setSelectedGame(game)
     setResults([])
     setProgress({ ...initialSearchProgress, status: 'loading-bots' })
 
@@ -148,7 +146,6 @@ export function useBotSearch() {
   return {
     progress,
     results,
-    selectedGame,
     startSearch,
     pause,
     resume,

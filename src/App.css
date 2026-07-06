@@ -547,18 +547,6 @@
   flex-shrink: 0;
 }
 
-.app-footer {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #2a475e;
-  color: #8f98a0;
-  font-size: 0.85rem;
-}
-
-.app-footer p {
-  margin: 0.25rem 0;
-}
-
 @media (max-width: 600px) {
   .app-header {
     flex-direction: column;
