@@ -2,7 +2,7 @@
 
 **Live site:** https://itrapashko.github.io/local-steam-trade-matcher/
 
-Trade your duplicate Steam trading cards with bots for a selected game. A local
+Trade your duplicate regular or foil Steam trading cards with bots for a selected game. A local
 alternative to [Steam Trade Matcher](https://asf.justarchi.net/STM) without
 queues.
 

@@ -51,7 +51,7 @@ export default function App() {
         <div>
           <h1>Local Steam Trade Matcher</h1>
           <p className="subtitle">
-            Trade your duplicate Steam trading cards with bots for a selected
+            Trade your duplicate regular or foil Steam trading cards with bots for a selected
             game. A local alternative to Steam Trade Matcher without queues.
           </p>
         </div>
