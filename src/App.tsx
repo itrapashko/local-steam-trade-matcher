@@ -11,6 +11,7 @@ import './App.css'
 
 const GITHUB_REPO_URL = 'https://github.com/itrapashko/local-steam-trade-matcher'
 const ASF_STM_URL = 'https://asf.justarchi.net/STM'
+const GAME_DATA_REPO_URL = 'https://github.com/jsnli/steamappidlist'
 
 export default function App() {
   const { apps, loading, error, searchApps } = useAppList()
@@ -62,6 +63,14 @@ export default function App() {
             rel="noreferrer"
           >
             GitHub
+          </a>
+          <a
+            className="header-link"
+            href={GAME_DATA_REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Game data
           </a>
           <a
             className="header-link"
