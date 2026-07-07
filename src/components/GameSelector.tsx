@@ -79,7 +79,7 @@ export function GameSelector({
     <section className="panel">
       <h2>Select game</h2>
       <p className="hint">
-        Enter an AppID or game name. You can type an AppID manually even if the game is not in the Steam list.
+        Enter a game name or game id. You can type a game id manually even if the game is not in the Steam list.
       </p>
       {loading && <p className="status">Loading game list…</p>}
       {error && <p className="error">{error}</p>}
@@ -88,7 +88,7 @@ export function GameSelector({
           type="text"
           value={query}
           disabled={disabled}
-          placeholder="e.g. 263280 or WAVESHAPER"
+          placeholder="e.g. WAVESHAPER or 263280"
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setOpen(true)}
@@ -108,7 +108,7 @@ export function GameSelector({
       </div>
       {selected && (
         <p className="selected-game">
-          Selected: <strong>{selected.name}</strong> (AppID {selected.appid})
+          Selected: <strong>{selected.name}</strong> (game id {selected.appid})
         </p>
       )}
       {cardStatus === 'checking' && (
