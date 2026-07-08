@@ -2,6 +2,7 @@ import { isSteamApiPath } from '../utils/steamProxy'
 
 const PRODUCTION_PROXY_BASE_URL = (import.meta.env.VITE_PROXY_BASE_URL ?? '').replace(/\/$/, '')
 const STEAM_FETCH_RETRIES = 3
+const STEAM_FETCH_RETRY_DELAY = 30_000
 
 function getProxyBaseUrl(): string {
   return import.meta.env.DEV ? '' : PRODUCTION_PROXY_BASE_URL
@@ -27,6 +28,7 @@ export function createApiClient(proxyBaseUrl?: string): ApiClient {
     url: string,
     init?: RequestInit,
     retries = 2,
+    retryDelay = 1000,
   ): Promise<Response> {
     let lastError: unknown
     for (let attempt = 0; attempt <= retries; attempt++) {
@@ -35,7 +37,7 @@ export function createApiClient(proxyBaseUrl?: string): ApiClient {
         const shouldRetry =
           attempt < retries && (response.status === 429 || response.status === 0)
         if (shouldRetry) {
-          await delay(1000 * (attempt + 1))
+          await delay(retryDelay * (attempt + 1))
           continue
         }
         return response
@@ -51,11 +53,14 @@ export function createApiClient(proxyBaseUrl?: string): ApiClient {
 
   async function fetchResolved(path: string, init?: RequestInit): Promise<Response> {
     const url = resolveUrl(path)
-    const retries = isSteamApiPath(path) ? STEAM_FETCH_RETRIES : 2
+    const isSteamApi = isSteamApiPath(url)
+    const retries = isSteamApi ? STEAM_FETCH_RETRIES : 2
+    const retryDelay = isSteamApi ? STEAM_FETCH_RETRY_DELAY : 1000
     return fetchWithRetry(
       url,
       { ...init, redirect: 'follow' },
       retries,
+      retryDelay,
     )
   }
 

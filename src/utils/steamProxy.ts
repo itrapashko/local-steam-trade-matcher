@@ -25,5 +25,15 @@ export function toProxiedSteamUrl(location: string, apiBaseUrl: string): string 
 }
 
 export function isSteamApiPath(path: string): boolean {
+  // Accept both:
+  // - relative paths: `/api/steam/...`
+  // - absolute URLs after proxy resolution: `https://host/api/steam/...`
+  try {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return new URL(path).pathname.startsWith('/api/steam')
+    }
+  } catch {
+    // If URL parsing fails, fall back to string check below.
+  }
   return path.startsWith('/api/steam')
 }
