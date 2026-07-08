@@ -18,8 +18,11 @@ On push to `main`, the [`.github/workflows/deploy-pages.yml`](../.github/workflo
 | Name | Value |
 |------|--------|
 | `VITE_PROXY_BASE_URL` | Cloudflare Worker URL with no trailing `/` |
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics 4 measurement ID (`G-XXXXXXXXXX`) |
 
-Without this variable the site loads, but loading game cards for bots will not work. See [proxy.md](proxy.md).
+Without `VITE_PROXY_BASE_URL` the site loads, but loading game cards for bots will not work. See [proxy.md](proxy.md).
+
+Without `VITE_GA_MEASUREMENT_ID` the site works normally; analytics is simply disabled.
 
 After adding or changing the variable, redeploy (push to `main` or **Actions → Deploy to GitHub Pages → Run workflow**).
 

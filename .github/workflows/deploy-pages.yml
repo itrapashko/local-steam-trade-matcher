@@ -31,6 +31,7 @@ jobs:
       - name: Build
         env:
           VITE_PROXY_BASE_URL: ${{ vars.VITE_PROXY_BASE_URL }}
+          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
         run: npm run build:pages
 
       - name: Deploy
