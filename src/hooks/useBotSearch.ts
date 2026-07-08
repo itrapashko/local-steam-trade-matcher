@@ -4,6 +4,7 @@ import { findAppById, loadAppList, searchApps } from '../api/appList'
 import { fetchGameSetCards } from '../api/gameCards'
 import { BotSearchService } from '../services/botSearch'
 import type { GameSetCard } from '../services/parseGameCardsHtml'
+import { useBotSearchAnalytics } from './useSearchAnalytics'
 import {
   applyBotSearchEvent,
   initialSearchProgress,
@@ -113,6 +114,7 @@ export function useBotSearch() {
   const serviceRef = useRef<BotSearchService | null>(null)
   const [progress, setProgress] = useState<SearchProgress>(initialSearchProgress)
   const [results, setResults] = useState<BotMatchResult[]>([])
+  const { markBotSearchStarted } = useBotSearchAnalytics(progress)
 
   const onEvent = useCallback((event: BotSearchEvent) => {
     setProgress((prev) => applyBotSearchEvent(prev, event))
@@ -121,6 +123,7 @@ export function useBotSearch() {
   const startSearch = useCallback(async (game: SteamApp, cardType: CardType) => {
     setResults([])
     setProgress({ ...initialSearchProgress, status: 'loading-bots' })
+    markBotSearchStarted()
 
     const client = createApiClient()
     const service = new BotSearchService(client, {
@@ -132,7 +135,7 @@ export function useBotSearch() {
 
     serviceRef.current = service
     await service.start({ gameAppId: game.appid, cardType })
-  }, [onEvent])
+  }, [markBotSearchStarted, onEvent])
 
   const pause = useCallback(() => serviceRef.current?.pause(), [])
   const resume = useCallback(() => serviceRef.current?.resume(), [])

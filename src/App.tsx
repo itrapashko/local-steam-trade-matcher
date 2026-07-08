@@ -4,6 +4,7 @@ import { BotResultList } from './components/BotResultList'
 import { SearchControls } from './components/SearchControls'
 import { SearchProgressBar } from './components/SearchProgress'
 import { SearchSettings } from './components/SearchSettings'
+import { trackGoogleAnalyticsEvent } from './analytics/gtag'
 import { useAppList, useBotSearch, useGameCardCheck } from './hooks/useBotSearch'
 import { useSearchFilters } from './hooks/useSearchFilters'
 import type { SteamApp } from './types/steam'
@@ -38,11 +39,47 @@ export default function App() {
   const { cardStatus, cardError, gameCards, showCardFilters, cardsLoading } =
     useGameCardCheck(game, cardType)
 
+  function handleSelectGame(app: SteamApp) {
+    setGame(app)
+    trackGoogleAnalyticsEvent('select_game', { app_id: app.appid })
+  }
+
+  function handleCardTypeChange(value: 'regular' | 'foil') {
+    setCardType(value)
+    trackGoogleAnalyticsEvent('set_card_type', { value })
+  }
+
+  function handleAnyModeOnlyChange(value: boolean) {
+    setAnyModeOnly(value)
+    trackGoogleAnalyticsEvent('set_any_mode_only', { value })
+  }
+
+  function handleSelectedCardNamesChange(names: string[]) {
+    setSelectedCardNames(names)
+    trackGoogleAnalyticsEvent('set_card_filters', { selected_count: names.length })
+  }
+
   function handleStart() {
     if (!game) {
       return
     }
+    trackGoogleAnalyticsEvent('search_start', { app_id: game.appid, card_type: cardType })
     void startSearch(game, cardType)
+  }
+
+  function handlePause() {
+    trackGoogleAnalyticsEvent('search_pause')
+    pause()
+  }
+
+  function handleResume() {
+    trackGoogleAnalyticsEvent('search_resume')
+    resume()
+  }
+
+  function handleStop() {
+    trackGoogleAnalyticsEvent('search_stop')
+    stop()
   }
 
   return (
@@ -61,6 +98,7 @@ export default function App() {
             href={GITHUB_REPO_URL}
             target="_blank"
             rel="noreferrer"
+            onClick={() => trackGoogleAnalyticsEvent('outbound_click', { target: 'github' })}
           >
             GitHub
           </a>
@@ -69,6 +107,7 @@ export default function App() {
             href={GAME_DATA_REPO_URL}
             target="_blank"
             rel="noreferrer"
+            onClick={() => trackGoogleAnalyticsEvent('outbound_click', { target: 'game_data' })}
           >
             Game data
           </a>
@@ -77,6 +116,7 @@ export default function App() {
             href={ASF_STM_URL}
             target="_blank"
             rel="noreferrer"
+            onClick={() => trackGoogleAnalyticsEvent('outbound_click', { target: 'bot_data' })}
           >
             Bot data
           </a>
@@ -90,7 +130,7 @@ export default function App() {
           error={error}
           disabled={isSearching}
           onSearch={searchApps}
-          onSelect={setGame}
+          onSelect={handleSelectGame}
           selected={game}
           cardStatus={cardStatus}
           cardError={cardError}
@@ -101,13 +141,13 @@ export default function App() {
             game={game}
             gameCards={gameCards}
             cardType={cardType}
-            onCardTypeChange={setCardType}
+            onCardTypeChange={handleCardTypeChange}
             cardTypeDisabled={isSearching}
             showCardFilters={showCardFilters}
             anyModeOnly={anyModeOnly}
-            onAnyModeOnlyChange={setAnyModeOnly}
+            onAnyModeOnlyChange={handleAnyModeOnlyChange}
             selectedCardNames={selectedCardNames}
-            onSelectedCardNamesChange={setSelectedCardNames}
+            onSelectedCardNamesChange={handleSelectedCardNamesChange}
           />
         )}
 
@@ -116,9 +156,9 @@ export default function App() {
           isSearching={isSearching}
           isPaused={isPaused}
           onStart={handleStart}
-          onPause={pause}
-          onResume={resume}
-          onStop={stop}
+          onPause={handlePause}
+          onResume={handleResume}
+          onStop={handleStop}
         />
 
         <SearchProgressBar progress={progress} />
