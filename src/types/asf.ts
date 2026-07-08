@@ -1,11 +1,5 @@
-export const MATCHABLE_TRADING_CARD = 3
-export const MATCHABLE_FOIL_CARD = 5
-
-export type MatchableType =
-  | typeof MATCHABLE_TRADING_CARD
-  | typeof MATCHABLE_FOIL_CARD
-  | 2
-  | 4
+export const MATCHABLE_FOIL_CARD = 3
+export const MATCHABLE_TRADING_CARD = 5
 
 export interface AsfBot {
   SteamIDText: string
