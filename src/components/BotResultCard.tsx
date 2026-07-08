@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import type { BotMatchResult } from '../types/steam'
 import { getBotTradeMode } from '../types/asf'
 import { totalCardCount } from '../services/parseGameCardsHtml'
@@ -10,14 +11,16 @@ import {
 
 interface BotResultCardProps {
   result: BotMatchResult
+  selectedCardNames: string[]
 }
 
-export function BotResultCard({ result }: BotResultCardProps) {
+export function BotResultCard({ result, selectedCardNames }: BotResultCardProps) {
   const { bot, cards, gameAppId, cardType } = result
   const steamId = bot.SteamIDText
   const avatarUrl = buildAvatarUrl(bot.AvatarHash)
   const cardTotal = totalCardCount(cards)
   const tradeMode = getBotTradeMode(bot)
+  const selectedSet = useMemo(() => new Set(selectedCardNames), [selectedCardNames])
 
   return (
     <article className="bot-card">
@@ -58,7 +61,10 @@ export function BotResultCard({ result }: BotResultCardProps) {
       </header>
       <ul className="card-list">
         {cards.map((card) => (
-          <li key={card.name} className="card-item">
+          <li
+            key={card.name}
+            className={`card-item${selectedSet.has(card.name) ? ' selected' : ''}`}
+          >
             {card.imageUrl && (
               <img src={card.imageUrl} alt="" className="card-icon" />
             )}

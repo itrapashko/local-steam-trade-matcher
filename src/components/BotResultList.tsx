@@ -36,7 +36,11 @@ export function BotResultList({
       ) : (
         <div className="results-list">
           {filteredResults.map((result) => (
-            <BotResultCard key={result.bot.SteamIDText} result={result} />
+            <BotResultCard
+              key={result.bot.SteamIDText}
+              result={result}
+              selectedCardNames={selectedCardNames}
+            />
           ))}
         </div>
       )}

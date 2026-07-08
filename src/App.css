@@ -513,9 +513,14 @@
   gap: 0.45rem;
   padding: 0.7rem 0.5rem;
   background: #16202d;
-  border: 1px solid #2a475e;
+  border: 2px solid #2a475e;
   border-radius: 6px;
   text-align: center;
+}
+
+.card-item.selected {
+  border-color: #66c0f4;
+  box-shadow: 0 0 0 1px #66c0f4aa;
 }
 
 .card-icon {
