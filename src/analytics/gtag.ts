@@ -34,7 +34,7 @@ export function initGoogleAnalytics(): void {
   window.gtag(
     'config',
     MEASUREMENT_ID,
-    import.meta.env.DEV ? { debug_mode: true } : undefined,
+    import.meta.env.DEV ? { debug_mode: true } : {},
   )
 
   const script = document.createElement('script')
