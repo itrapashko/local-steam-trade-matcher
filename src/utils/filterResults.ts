@@ -1,5 +1,5 @@
 import { getBotTradeMode } from '../types/asf'
-import type { BotMatchResult } from '../types/steam'
+import type { BotMatchResult, GameSetCard } from '../types/steam'
 
 export interface ResultFilterOptions {
   anyModeOnly: boolean
@@ -32,7 +32,4 @@ export function filterBotResults(
   return filtered
 }
 
-export interface FilterCardOption {
-  name: string
-  imageUrl: string | null
-}
+export type FilterCardOption = GameSetCard

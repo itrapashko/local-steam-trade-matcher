@@ -1,11 +1,10 @@
 import type { ApiClient } from './client'
 import {
   gameHasTradingCards,
-  parseGameCardsHtml,
+  parseOwnedGameHtml as parseOwnedGameCardsHtml,
   parseGameSetCards,
-  type GameSetCard,
 } from '../services/parseGameCardsHtml'
-import type { CardType, OwnedGameCard } from '../types/steam'
+import type { CardType, GameSetCard, OwnedGameCard } from '../types/steam'
 
 function gameCardsPath(
   steamId: number | string,
@@ -59,7 +58,7 @@ export async function fetchOwnedGameCards(
 ): Promise<OwnedGameCard[]> {
   try {
     const html = await fetchGameCardsHtml(client, steamId, appId, cardType)
-    return parseGameCardsHtml(html)
+    return parseOwnedGameCardsHtml(html)
   } catch (error) {
     console.warn(`[STM] Failed to load cards ${steamId}/${appId}:`, error)
     return []

@@ -1,4 +1,4 @@
-import type { OwnedGameCard } from '../types/steam'
+import type { GameSetCard, OwnedGameCard } from '../types/steam'
 
 export function parseQuantity(text: string | null | undefined): number {
   if (!text) {
@@ -19,56 +19,65 @@ function parseCardName(titleElement: Element | null): string | null {
   return name || null
 }
 
-export function parseGameCardsHtml(html: string): OwnedGameCard[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const ownedElements = doc.querySelectorAll('.badge_card_set_card.owned')
-
-  const cards: OwnedGameCard[] = []
-  ownedElements.forEach((element) => {
-    const quantityText = element.querySelector('.badge_card_set_text_qty')?.textContent
-    const quantity = parseQuantity(quantityText)
-    if (quantity <= 0) {
-      return
+function parseCardSetPosition(element: Element): { index: number; setSize: number } | null {
+  const texts = element.querySelectorAll('.badge_card_set_text:not(.badge_card_set_title)')
+  for (const textEl of texts) {
+    const match = textEl.textContent?.match(/(\d+)\s+of\s+(\d+)/i)
+    if (match) {
+      return { index: Number(match[1]), setSize: Number(match[2]) }
     }
+  }
+  return null
+}
 
+interface ParsedGameCard extends OwnedGameCard {
+  owned: boolean
+}
+
+function parseAllGameCards(html: string): ParsedGameCard[] {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const elements = doc.querySelectorAll('.badge_card_set_card')
+  const fallbackSetSize = elements.length
+  const cards: ParsedGameCard[] = []
+
+  elements.forEach((element, i) => {
     const name = parseCardName(element.querySelector('.badge_card_set_title'))
     if (!name) {
       return
     }
 
+    const owned = element.classList.contains('owned')
+    const quantityText = element.querySelector('.badge_card_set_text_qty')?.textContent
+    const quantity = owned ? parseQuantity(quantityText) : 0
     const imageUrl = element.querySelector('img.gamecard')?.getAttribute('src') ?? null
+    const position = parseCardSetPosition(element)
 
     cards.push({
       name,
-      quantity,
       imageUrl,
+      quantity,
+      owned,
+      index: position?.index ?? i + 1,
+      setSize: position?.setSize ?? fallbackSetSize,
     })
   })
 
   return cards
 }
 
-export interface GameSetCard {
-  name: string
-  imageUrl: string | null
+export function parseOwnedGameHtml(html: string): OwnedGameCard[] {
+  return parseAllGameCards(html)
+    .filter((card) => card.owned && card.quantity > 0)
+    .map(({ owned: _, ...card }) => card)
 }
 
 export function parseGameSetCards(html: string): GameSetCard[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const elements = doc.querySelectorAll('.badge_card_set_card')
-
-  const cards: GameSetCard[] = []
-  elements.forEach((element) => {
-    const name = parseCardName(element.querySelector('.badge_card_set_title'))
-    if (!name) {
-      return
-    }
-
-    const imageUrl = element.querySelector('img.gamecard')?.getAttribute('src') ?? null
-    cards.push({ name, imageUrl })
-  })
-
-  return cards
+  return parseAllGameCards(html).map(({ name, imageUrl, index, setSize }) => ({
+    name,
+    imageUrl,
+    index,
+    setSize,
+  }))
 }
 
 export function totalCardCount(cards: OwnedGameCard[]): number {

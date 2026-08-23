@@ -1,9 +1,18 @@
 export type CardType = 'regular' | 'foil'
 
-export interface OwnedGameCard {
+export interface GameSetCard {
   name: string
-  quantity: number
   imageUrl: string | null
+  index: number
+  setSize: number
+}
+
+export interface OwnedGameCard extends GameSetCard {
+  quantity: number
+}
+
+export function formatCardIndex(card: Pick<GameSetCard, 'index' | 'setSize'>): string {
+  return `${card.index} of ${card.setSize}`
 }
 
 export interface SteamApp {

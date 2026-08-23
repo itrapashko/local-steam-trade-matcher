@@ -1,4 +1,4 @@
-import type { CardType } from '../types/steam'
+import { formatCardIndex, type CardType } from '../types/steam'
 import type { FilterCardOption } from '../utils/filterResults'
 import { CardTypeSelector } from './CardTypeSelector'
 
@@ -111,7 +111,10 @@ export function ResultFilters({
                       ) : (
                         <span className="card-filter-tile-placeholder" aria-hidden />
                       )}
-                      <span className="card-filter-tile-name">{card.name}</span>
+                      <span className="card-filter-tile-caption">
+                        <span className="card-filter-tile-name">{card.name}</span>
+                        <span className="card-filter-tile-index">{formatCardIndex(card)}</span>
+                      </span>
                     </button>
                   )
                 })}

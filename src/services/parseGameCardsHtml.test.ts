@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { formatCardIndex } from '../types/steam'
 import {
   gameHasTradingCards,
   parseGameCardsHtml,
@@ -53,10 +54,14 @@ describe('parseGameSetCards', () => {
     expect(cards[0]).toEqual({
       name: 'Triangle',
       imageUrl: 'https://example.com/triangle.png',
+      index: 1,
+      setSize: 3,
     })
     expect(cards[2]).toEqual({
       name: 'Player',
       imageUrl: 'https://example.com/player.png',
+      index: 3,
+      setSize: 3,
     })
   })
 
@@ -72,6 +77,13 @@ describe('parseGameSetCards', () => {
       'Player',
       'Line',
       'Void',
+    ])
+    expect(cards.map((c) => formatCardIndex(c))).toEqual([
+      '1 of 5',
+      '2 of 5',
+      '3 of 5',
+      '4 of 5',
+      '5 of 5',
     ])
   })
 
@@ -90,6 +102,15 @@ describe('parseGameSetCards', () => {
       'Recovery Giant',
       'Monster in the Forest',
     ])
+    expect(cards.map((c) => formatCardIndex(c))).toEqual([
+      '1 of 7',
+      '2 of 7',
+      '3 of 7',
+      '4 of 7',
+      '5 of 7',
+      '6 of 7',
+      '7 of 7',
+    ])
   })
 })
 
@@ -101,11 +122,15 @@ describe('parseGameCardsHtml', () => {
       name: 'Triangle',
       quantity: 1,
       imageUrl: 'https://example.com/triangle.png',
+      index: 1,
+      setSize: 3,
     })
     expect(cards[1]).toEqual({
       name: 'Square',
       quantity: 6,
       imageUrl: 'https://example.com/square.png',
+      index: 2,
+      setSize: 3,
     })
   })
 
@@ -131,6 +156,7 @@ describe('parseGameCardsHtml', () => {
     expect(cards).toHaveLength(3)
     expect(cards.map((c) => c.name)).toEqual(['Square', 'Player', 'Line'])
     expect(cards.map((c) => c.quantity)).toEqual([1, 2, 1])
+    expect(cards.map((c) => formatCardIndex(c))).toEqual(['2 of 5', '3 of 5', '4 of 5'])
   })
 
   it('parses foil cards from real Steam layout', () => {
@@ -140,7 +166,12 @@ describe('parseGameCardsHtml', () => {
     )
     const cards = parseGameCardsHtml(html)
     expect(cards).toHaveLength(1)
-    expect(cards[0]).toMatchObject({ name: 'Loading Logs', quantity: 1 })
+    expect(cards[0]).toMatchObject({
+      name: 'Loading Logs',
+      quantity: 1,
+      index: 3,
+      setSize: 7,
+    })
   })
 })
 
@@ -148,8 +179,8 @@ describe('totalCardCount', () => {
   it('sums quantities', () => {
     expect(
       totalCardCount([
-        { name: 'A', quantity: 2, imageUrl: null },
-        { name: 'B', quantity: 3, imageUrl: null },
+        { name: 'A', quantity: 2, imageUrl: null, index: 1, setSize: 2 },
+        { name: 'B', quantity: 3, imageUrl: null, index: 2, setSize: 2 },
       ]),
     ).toBe(5)
   })

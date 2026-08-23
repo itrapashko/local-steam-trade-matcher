@@ -3,12 +3,12 @@ import { createApiClient } from '../api/client'
 import { findAppById, loadAppList, searchApps } from '../api/appList'
 import { fetchGameSetCards } from '../api/gameCards'
 import { BotSearchService } from '../services/botSearch'
-import type { GameSetCard } from '../services/parseGameCardsHtml'
 import { useBotSearchAnalytics } from './useSearchAnalytics'
 import {
   applyBotSearchEvent,
   initialSearchProgress,
   type CardType,
+  type GameSetCard,
   type SteamApp,
   type BotMatchResult,
   type BotSearchEvent,

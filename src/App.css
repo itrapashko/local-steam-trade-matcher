@@ -398,10 +398,22 @@
   background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%);
 }
 
+.card-filter-tile-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
 .card-filter-tile-name {
   font-size: 0.8rem;
   line-height: 1.25;
   word-break: break-word;
+}
+
+.card-filter-tile-index {
+  font-size: 0.8rem;
+  color: #8f98a0;
 }
 
 .results-list {
@@ -529,6 +541,13 @@
   object-fit: contain;
 }
 
+.card-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
 .card-label {
   display: flex;
   flex-wrap: wrap;
@@ -550,6 +569,12 @@
   color: #66c0f4;
   font-weight: 600;
   flex-shrink: 0;
+}
+
+.card-index {
+  font-size: 0.88rem;
+  color: #8f98a0;
+  line-height: 1.25;
 }
 
 @media (max-width: 600px) {

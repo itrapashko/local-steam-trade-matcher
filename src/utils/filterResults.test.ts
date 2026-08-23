@@ -25,7 +25,12 @@ function makeResult(
 ): BotMatchResult {
   return {
     bot: makeBot(bot),
-    cards: cards.map((c) => ({ ...c, imageUrl: null })),
+    cards: cards.map((c, i) => ({
+      ...c,
+      imageUrl: null,
+      index: i + 1,
+      setSize: cards.length,
+    })),
     gameAppId: 440,
     cardType: 'regular',
   }

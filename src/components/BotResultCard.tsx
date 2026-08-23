@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { BotMatchResult } from '../types/steam'
+import { formatCardIndex, type BotMatchResult } from '../types/steam'
 import { getBotTradeMode } from '../types/asf'
 import { totalCardCount } from '../services/parseGameCardsHtml'
 import {
@@ -68,11 +68,14 @@ export function BotResultCard({ result, selectedCardNames }: BotResultCardProps)
             {card.imageUrl && (
               <img src={card.imageUrl} alt="" className="card-icon" />
             )}
-            <div className="card-label">
-              <span className="card-name">{card.name}</span>
-              {card.quantity > 1 && (
-                <span className="card-qty">×{card.quantity}</span>
-              )}
+            <div className="card-caption">
+              <div className="card-label">
+                <span className="card-name">{card.name}</span>
+                {card.quantity > 1 && (
+                  <span className="card-qty">×{card.quantity}</span>
+                )}
+              </div>
+              <span className="card-index">{formatCardIndex(card)}</span>
             </div>
           </li>
         ))}
