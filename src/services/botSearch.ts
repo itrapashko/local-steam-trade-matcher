@@ -28,6 +28,9 @@ export class BotSearchService {
   private pauseResolver: (() => void) | null = null;
   private currentIndex = 0;
   private bots: AsfBot[] = [];
+  private startedAt = 0;
+  private pausedAt: number | null = null;
+  private pausedMs = 0;
 
   constructor(
     private readonly client: ApiClient,
@@ -35,6 +38,9 @@ export class BotSearchService {
   ) { }
 
   pause(): void {
+    if (!this.paused) {
+      this.pausedAt = performance.now()
+    }
     this.paused = true
     this.emitEvent({ kind: 'paused' })
   }
@@ -44,6 +50,7 @@ export class BotSearchService {
       return
     }
     this.paused = false
+    this.accumulatePausedTime()
     this.emitEvent({ kind: 'resumed' })
     this.pauseResolver?.()
     this.pauseResolver = null
@@ -52,6 +59,7 @@ export class BotSearchService {
   stop(): void {
     this.aborted = true
     this.paused = false
+    this.accumulatePausedTime()
     this.pauseResolver?.()
     this.pauseResolver = null
     this.emitEvent({ kind: 'stopped' })
@@ -62,6 +70,9 @@ export class BotSearchService {
     this.paused = false
     this.currentIndex = 0
     this.found = 0
+    this.startedAt = performance.now()
+    this.pausedAt = null
+    this.pausedMs = 0
 
     try {
       await this.emitEventAwaitingResume({ kind: 'loading-bots' })
@@ -94,7 +105,7 @@ export class BotSearchService {
         const bot = this.bots[i]!
         const steamId = bot.SteamIDText
         const gameCardsUrl = buildGameCardsUrl(steamId, options.gameAppId, options.cardType)
-        console.log(`[STM Search] ${bot.Nickname} — ${gameCardsUrl}`)
+        console.log(`[LSTM Search] ${bot.Nickname} — ${gameCardsUrl}`)
         await this.emitEventAwaitingResume({
           kind: 'searching',
           checked: i + 1,
@@ -165,8 +176,28 @@ export class BotSearchService {
     })
   }
 
+  private accumulatePausedTime(): void {
+    if (this.pausedAt == null) {
+      return
+    }
+    this.pausedMs += performance.now() - this.pausedAt
+    this.pausedAt = null
+  }
+
+  private activeDurationSeconds(): number {
+    const now = performance.now()
+    let pausedMs = this.pausedMs
+    if (this.pausedAt != null) {
+      pausedMs += now - this.pausedAt
+    }
+    return Math.max(0, now - this.startedAt - pausedMs) / 1000
+  }
+
   private emitEvent(event: BotSearchEvent): void {
     this.callbacks.onEvent(event)
+    if (event.kind === 'done') {
+      console.log(`[LSTM Search] finished in ${this.activeDurationSeconds().toFixed(1)}s`)
+    }
   }
 
   private async emitEventAwaitingResume(event: BotSearchEvent): Promise<void> {
