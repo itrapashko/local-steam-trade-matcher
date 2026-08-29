@@ -71,9 +71,7 @@ export function BotResultCard({ result, selectedCardNames }: BotResultCardProps)
             <div className="card-caption">
               <div className="card-label">
                 <span className="card-name">{card.name}</span>
-                {card.quantity > 1 && (
-                  <span className="card-qty">×{card.quantity}</span>
-                )}
+                <span className="card-qty">×{card.quantity}</span>
               </div>
               <span className="card-index">{formatCardIndex(card)}</span>
             </div>
