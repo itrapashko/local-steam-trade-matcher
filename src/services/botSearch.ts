@@ -117,18 +117,24 @@ export class BotSearchService {
           return
         }
 
-        const cards = await fetchOwnedGameCards(
-          this.client,
-          steamId,
-          options.gameAppId,
-          options.cardType,
-        )
+        let cards = null
+        try {
+          cards = await fetchOwnedGameCards(
+            this.client,
+            steamId,
+            options.gameAppId,
+            options.cardType,
+          )
+        } catch (error) {
+          console.warn(`[LSTM Search] Failed to load cards for ${bot.Nickname}:`, error)
+          await this.emitEventAwaitingResume({ kind: 'bot-failed' })
+        }
 
         if (this.aborted) {
           return
         }
 
-        if (totalCardCount(cards) > 0) {
+        if (cards && totalCardCount(cards) > 0) {
           this.found += 1
           this.callbacks.onMatch({
             bot,

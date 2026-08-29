@@ -55,6 +55,7 @@ describe('applyBotSearchEvent', () => {
     checked: 10,
     total: 412,
     found: 2,
+    failed: 0,
     currentBotNickname: 'Bot10',
     errorMessage: null,
   }
@@ -69,6 +70,23 @@ describe('applyBotSearchEvent', () => {
   it('restores searching on resume', () => {
     const paused = applyBotSearchEvent(searching, { kind: 'paused' })
     expect(applyBotSearchEvent(paused, { kind: 'resumed' })).toEqual(searching)
+  })
+
+  it('increments failed on bot-failed and keeps it through later events', () => {
+    const afterFail = applyBotSearchEvent(searching, { kind: 'bot-failed' })
+    expect(afterFail.failed).toBe(1)
+
+    const nextBot = applyBotSearchEvent(afterFail, {
+      kind: 'searching',
+      checked: 11,
+      total: 412,
+      found: 2,
+      currentBotNickname: 'Bot11',
+    })
+    expect(nextBot.failed).toBe(1)
+
+    const done = applyBotSearchEvent(nextBot, { kind: 'done', total: 412, found: 2 })
+    expect(done).toMatchObject({ status: 'done', failed: 1, found: 2 })
   })
 })
 
@@ -154,6 +172,7 @@ describe('BotSearchService pause', () => {
       checked: 1,
       total: 3,
       found: 0,
+      failed: 0,
       currentBotNickname: 'Bot1',
       errorMessage: null,
     })
@@ -232,5 +251,74 @@ describe('BotSearchService pause', () => {
     await startPromise
 
     expect(tracker.getState().status).toBe('done')
+  })
+})
+
+describe('BotSearchService card fetch errors', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(fetchBots).mockResolvedValue([
+      makeBot({ Nickname: 'Bot1', SteamIDText: '76561198001468641' }),
+      makeBot({ Nickname: 'Bot2', SteamIDText: '76561198001468642' }),
+    ])
+  })
+
+  it('continues to the next bot and reports failed count', async () => {
+    vi.mocked(fetchOwnedGameCards)
+      .mockRejectedValueOnce(new Error('HTTP 429'))
+      .mockResolvedValueOnce([])
+
+    const tracker = trackProgress()
+    const matches: string[] = []
+    const service = new BotSearchService(mockClient, {
+      onEvent: tracker.onEvent,
+      onMatch: (result) => {
+        matches.push(result.bot.Nickname)
+      },
+    })
+
+    await service.start({ gameAppId: 570, cardType: 'regular', rateLimitMs: 0 })
+
+    expect(fetchOwnedGameCards).toHaveBeenCalledTimes(2)
+    expect(matches).toEqual([])
+    expect(tracker.getState()).toMatchObject({
+      status: 'done',
+      checked: 2,
+      total: 2,
+      found: 0,
+      failed: 1,
+    })
+  })
+
+  it('still records matches from bots that load successfully', async () => {
+    vi.mocked(fetchOwnedGameCards)
+      .mockRejectedValueOnce(new Error('HTTP 503'))
+      .mockResolvedValueOnce([
+        {
+          name: 'Card',
+          imageUrl: null,
+          index: 1,
+          setSize: 5,
+          quantity: 2,
+        },
+      ])
+
+    const tracker = trackProgress()
+    const matches: string[] = []
+    const service = new BotSearchService(mockClient, {
+      onEvent: tracker.onEvent,
+      onMatch: (result) => {
+        matches.push(result.bot.Nickname)
+      },
+    })
+
+    await service.start({ gameAppId: 570, cardType: 'regular', rateLimitMs: 0 })
+
+    expect(matches).toEqual(['Bot2'])
+    expect(tracker.getState()).toMatchObject({
+      status: 'done',
+      found: 1,
+      failed: 1,
+    })
   })
 })

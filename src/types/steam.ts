@@ -41,6 +41,7 @@ export interface SearchProgress {
   checked: number
   total: number
   found: number
+  failed: number
   currentBotNickname: string | null
   errorMessage: string | null
 }
@@ -50,6 +51,7 @@ export const initialSearchProgress: SearchProgress = {
   checked: 0,
   total: 0,
   found: 0,
+  failed: 0,
   currentBotNickname: null,
   errorMessage: null,
 }
@@ -57,6 +59,7 @@ export const initialSearchProgress: SearchProgress = {
 export type BotSearchEvent =
   | { kind: 'loading-bots' }
   | { kind: 'searching'; checked: number; total: number; found: number; currentBotNickname: string | null }
+  | { kind: 'bot-failed' }
   | { kind: 'paused' }
   | { kind: 'resumed' }
   | { kind: 'done'; total: number; found: number }
@@ -76,9 +79,12 @@ export function applyBotSearchEvent(
         checked: event.checked,
         total: event.total,
         found: event.found,
+        failed: prev.failed,
         currentBotNickname: event.currentBotNickname,
         errorMessage: null,
       }
+    case 'bot-failed':
+      return { ...prev, failed: prev.failed + 1 }
     case 'paused':
       return { ...prev, status: 'paused' }
     case 'resumed':
@@ -89,6 +95,7 @@ export function applyBotSearchEvent(
         checked: event.total,
         total: event.total,
         found: event.found,
+        failed: prev.failed,
         currentBotNickname: null,
         errorMessage: null,
       }

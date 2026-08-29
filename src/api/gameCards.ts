@@ -56,11 +56,6 @@ export async function fetchOwnedGameCards(
   appId: number,
   cardType: CardType = 'regular',
 ): Promise<OwnedGameCard[]> {
-  try {
-    const html = await fetchGameCardsHtml(client, steamId, appId, cardType)
-    return parseOwnedGameCardsHtml(html)
-  } catch (error) {
-    console.warn(`[STM] Failed to load cards ${steamId}/${appId}:`, error)
-    return []
-  }
+  const html = await fetchGameCardsHtml(client, steamId, appId, cardType)
+  return parseOwnedGameCardsHtml(html)
 }

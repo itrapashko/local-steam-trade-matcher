@@ -11,6 +11,7 @@ function trackTerminalSearchStatus(
       checked: progress.checked,
       total: progress.total,
       found: progress.found,
+      failed: progress.failed,
       duration_ms: durationMs,
     })
     return true
@@ -21,6 +22,7 @@ function trackTerminalSearchStatus(
       checked: progress.checked,
       total: progress.total,
       found: progress.found,
+      failed: progress.failed,
       duration_ms: durationMs,
     })
     return true
@@ -31,6 +33,7 @@ function trackTerminalSearchStatus(
       checked: progress.checked,
       total: progress.total,
       found: progress.found,
+      failed: progress.failed,
       duration_ms: durationMs,
       message_length: progress.errorMessage?.length ?? 0,
     })
