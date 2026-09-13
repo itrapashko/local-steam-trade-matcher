@@ -13,6 +13,7 @@ import './App.css'
 const GITHUB_REPO_URL = 'https://github.com/itrapashko/local-steam-trade-matcher'
 const ASF_STM_URL = 'https://asf.justarchi.net/STM'
 const GAME_DATA_REPO_URL = 'https://github.com/jsnli/steamappidlist'
+const DONATE_URL = 'https://steamcommunity.com/tradeoffer/new/?partner=193526481&token=auEC0VAT'
 
 export default function App() {
   const { apps, loading, error, searchApps } = useAppList()
@@ -119,6 +120,15 @@ export default function App() {
             onClick={() => trackGoogleAnalyticsEvent('outbound_click', { target: 'bot_data' })}
           >
             Bot data
+          </a>
+          <a
+            className="header-link"
+            href={DONATE_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackGoogleAnalyticsEvent('outbound_click', { target: 'donate' })}
+          >
+            Donate
           </a>
         </div>
       </header>
