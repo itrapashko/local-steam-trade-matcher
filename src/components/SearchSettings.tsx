@@ -11,6 +11,8 @@ interface SearchSettingsProps {
   showCardFilters: boolean
   anyModeOnly: boolean
   onAnyModeOnlyChange: (value: boolean) => void
+  showWithheldFairBots: boolean
+  onShowWithheldFairBotsChange: (value: boolean) => void
   selectedCardNames: string[]
   onSelectedCardNamesChange: (names: string[]) => void
 }
@@ -24,6 +26,8 @@ export function SearchSettings({
   showCardFilters,
   anyModeOnly,
   onAnyModeOnlyChange,
+  showWithheldFairBots,
+  onShowWithheldFairBotsChange,
   selectedCardNames,
   onSelectedCardNamesChange,
 }: SearchSettingsProps) {
@@ -37,6 +41,8 @@ export function SearchSettings({
         showCardFilters={showCardFilters}
         anyModeOnly={anyModeOnly}
         onAnyModeOnlyChange={onAnyModeOnlyChange}
+        showWithheldFairBots={showWithheldFairBots}
+        onShowWithheldFairBotsChange={onShowWithheldFairBotsChange}
         cards={gameCards}
         selectedCardNames={selectedCardNames}
         onSelectedCardNamesChange={onSelectedCardNamesChange}

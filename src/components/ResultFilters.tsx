@@ -9,6 +9,8 @@ interface ResultFiltersProps {
   showCardFilters: boolean
   anyModeOnly: boolean
   onAnyModeOnlyChange: (value: boolean) => void
+  showWithheldFairBots: boolean
+  onShowWithheldFairBotsChange: (value: boolean) => void
   cards: FilterCardOption[]
   selectedCardNames: string[]
   onSelectedCardNamesChange: (names: string[]) => void
@@ -32,6 +34,8 @@ export function ResultFilters({
   showCardFilters,
   anyModeOnly,
   onAnyModeOnlyChange,
+  showWithheldFairBots,
+  onShowWithheldFairBotsChange,
   cards,
   selectedCardNames,
   onSelectedCardNamesChange,
@@ -72,6 +76,33 @@ export function ResultFilters({
               Only bots with <span className="trade-mode trade-mode-any">Any</span> trade mode
             </span>
           </label>
+
+          <label
+            className={`filter-toggle${anyModeOnly ? ' disabled' : ''}`}
+            title={
+              anyModeOnly
+                ? 'Fair bots are already hidden by the Any-only filter'
+                : undefined
+            }
+          >
+            <input
+              type="checkbox"
+              className="filter-toggle-input"
+              checked={showWithheldFairBots}
+              disabled={anyModeOnly}
+              onChange={(e) => onShowWithheldFairBotsChange(e.target.checked)}
+            />
+            <span className="filter-toggle-track" aria-hidden>
+              <span className="filter-toggle-thumb" />
+            </span>
+            <span className="filter-toggle-label">
+              Show <span className="trade-mode trade-mode-fair">Fair</span> bots that won't give selected cards
+            </span>
+          </label>
+          <p className="filter-hint">
+            A Fair bot gives a card only when it has another card in the set with a smaller amount.
+            A missing card counts as zero.
+          </p>
 
           {cards.length > 0 && (
             <fieldset className="card-filter">

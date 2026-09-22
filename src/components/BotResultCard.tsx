@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { formatCardIndex, type BotMatchResult } from '../types/steam'
 import { getBotTradeMode } from '../types/asf'
 import { totalCardCount } from '../services/parseGameCardsHtml'
+import { fairBotWillGiveCard } from '../utils/fairTrade'
 import {
   buildAvatarUrl,
   buildGameCardsUrl,
@@ -21,6 +22,14 @@ export function BotResultCard({ result, selectedCardNames }: BotResultCardProps)
   const cardTotal = totalCardCount(cards)
   const tradeMode = getBotTradeMode(bot)
   const selectedSet = useMemo(() => new Set(selectedCardNames), [selectedCardNames])
+  const withheldNames = useMemo(() => {
+    if (tradeMode !== 'Fair') {
+      return new Set<string>()
+    }
+    return new Set(
+      cards.filter((card) => !fairBotWillGiveCard(cards, card)).map((card) => card.name),
+    )
+  }, [cards, tradeMode])
 
   return (
     <article className="bot-card">
@@ -60,23 +69,27 @@ export function BotResultCard({ result, selectedCardNames }: BotResultCardProps)
         </div>
       </header>
       <ul className="card-list">
-        {cards.map((card) => (
-          <li
-            key={card.name}
-            className={`card-item${selectedSet.has(card.name) ? ' selected' : ''}`}
-          >
-            {card.imageUrl && (
-              <img src={card.imageUrl} alt="" className="card-icon" />
-            )}
-            <div className="card-caption">
-              <div className="card-label">
-                <span className="card-name">{card.name}</span>
-                <span className="card-qty">×{card.quantity}</span>
+        {cards.map((card) => {
+          const withheld = withheldNames.has(card.name)
+          return (
+            <li
+              key={card.name}
+              className={`card-item${selectedSet.has(card.name) ? ' selected' : ''}${withheld ? ' withheld' : ''}`}
+            >
+              {card.imageUrl && (
+                <img src={card.imageUrl} alt="" className="card-icon" />
+              )}
+              <div className="card-caption">
+                <div className="card-label">
+                  <span className="card-name">{card.name}</span>
+                  <span className="card-qty">×{card.quantity}</span>
+                </div>
+                <span className="card-index">{formatCardIndex(card)}</span>
+                {withheld && <span className="card-withheld">Won't give</span>}
               </div>
-              <span className="card-index">{formatCardIndex(card)}</span>
-            </div>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
     </article>
   )

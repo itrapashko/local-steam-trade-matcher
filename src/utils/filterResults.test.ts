@@ -53,13 +53,18 @@ describe('filterBotResults', () => {
 
   it('returns all results when no filters are active', () => {
     expect(
-      filterBotResults(results, { anyModeOnly: false, selectedCardNames: [] }),
+      filterBotResults(results, {
+        anyModeOnly: false,
+        showWithheldFairBots: true,
+        selectedCardNames: [],
+      }),
     ).toHaveLength(3)
   })
 
   it('keeps only Any-mode bots', () => {
     const filtered = filterBotResults(results, {
       anyModeOnly: true,
+      showWithheldFairBots: false,
       selectedCardNames: [],
     })
     expect(filtered.map((r) => r.bot.Nickname)).toEqual(['AnyBot', 'AnyFull'])
@@ -68,6 +73,7 @@ describe('filterBotResults', () => {
   it('keeps bots that have at least one selected card', () => {
     const filtered = filterBotResults(results, {
       anyModeOnly: false,
+      showWithheldFairBots: true,
       selectedCardNames: ['Card A', 'Card B'],
     })
     expect(filtered.map((r) => r.bot.Nickname)).toEqual([
@@ -80,8 +86,51 @@ describe('filterBotResults', () => {
   it('combines Any-mode and card filters', () => {
     const filtered = filterBotResults(results, {
       anyModeOnly: true,
+      showWithheldFairBots: false,
       selectedCardNames: ['Card A', 'Card B'],
     })
     expect(filtered.map((r) => r.bot.Nickname)).toEqual(['AnyBot', 'AnyFull'])
+  })
+
+  it('hides Fair bots that will not give any relevant card', () => {
+    const locked = [
+      ...results,
+      makeResult({ Nickname: 'LockedFair', MatchEverything: false }, [
+        { name: 'Card A', quantity: 1 },
+        { name: 'Card B', quantity: 1 },
+      ]),
+    ]
+    const filtered = filterBotResults(locked, {
+      anyModeOnly: false,
+      showWithheldFairBots: false,
+      selectedCardNames: [],
+    })
+    expect(filtered.map((r) => r.bot.Nickname)).toEqual([
+      'FairBot',
+      'AnyBot',
+      'AnyFull',
+    ])
+  })
+
+  it('hides a Fair bot when every selected card is protected', () => {
+    const filtered = filterBotResults(results, {
+      anyModeOnly: false,
+      showWithheldFairBots: false,
+      selectedCardNames: ['Card A'],
+    })
+    expect(filtered.map((r) => r.bot.Nickname)).toEqual(['AnyBot', 'AnyFull'])
+  })
+
+  it('shows protected Fair bots when the option is on', () => {
+    const filtered = filterBotResults(results, {
+      anyModeOnly: false,
+      showWithheldFairBots: true,
+      selectedCardNames: ['Card A'],
+    })
+    expect(filtered.map((r) => r.bot.Nickname)).toEqual([
+      'FairBot',
+      'AnyBot',
+      'AnyFull',
+    ])
   })
 })

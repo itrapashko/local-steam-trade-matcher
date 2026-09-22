@@ -1,8 +1,10 @@
 import { getBotTradeMode } from '../types/asf'
 import type { BotMatchResult, GameSetCard } from '../types/steam'
+import { botCanGiveRelevantCards } from './fairTrade'
 
 export interface ResultFilterOptions {
   anyModeOnly: boolean
+  showWithheldFairBots: boolean
   selectedCardNames: string[]
 }
 
@@ -27,6 +29,16 @@ export function filterBotResults(
       }
       return false
     })
+  }
+
+  if (!options.showWithheldFairBots) {
+    filtered = filtered.filter((r) =>
+      botCanGiveRelevantCards(
+        r.cards,
+        getBotTradeMode(r.bot),
+        options.selectedCardNames,
+      ),
+    )
   }
 
   return filtered

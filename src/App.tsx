@@ -34,6 +34,8 @@ export default function App() {
     setCardType,
     anyModeOnly,
     setAnyModeOnly,
+    showWithheldFairBots,
+    setShowWithheldFairBots,
     selectedCardNames,
     setSelectedCardNames,
   } = useSearchFilters(game?.appid ?? null)
@@ -53,6 +55,11 @@ export default function App() {
   function handleAnyModeOnlyChange(value: boolean) {
     setAnyModeOnly(value)
     trackGoogleAnalyticsEvent('set_any_mode_only', { value })
+  }
+
+  function handleShowWithheldFairBotsChange(value: boolean) {
+    setShowWithheldFairBots(value)
+    trackGoogleAnalyticsEvent('set_show_withheld_fair_bots', { value })
   }
 
   function handleSelectedCardNamesChange(names: string[]) {
@@ -156,6 +163,8 @@ export default function App() {
             showCardFilters={showCardFilters}
             anyModeOnly={anyModeOnly}
             onAnyModeOnlyChange={handleAnyModeOnlyChange}
+            showWithheldFairBots={showWithheldFairBots}
+            onShowWithheldFairBotsChange={handleShowWithheldFairBotsChange}
             selectedCardNames={selectedCardNames}
             onSelectedCardNamesChange={handleSelectedCardNamesChange}
           />
@@ -176,6 +185,7 @@ export default function App() {
         <BotResultList
           results={results}
           anyModeOnly={anyModeOnly}
+          showWithheldFairBots={showWithheldFairBots}
           selectedCardNames={selectedCardNames}
         />
       </main>

@@ -6,17 +6,24 @@ import { BotResultCard } from './BotResultCard'
 interface BotResultListProps {
   results: BotMatchResult[]
   anyModeOnly: boolean
+  showWithheldFairBots: boolean
   selectedCardNames: string[]
 }
 
 export function BotResultList({
   results,
   anyModeOnly,
+  showWithheldFairBots,
   selectedCardNames,
 }: BotResultListProps) {
   const filteredResults = useMemo(
-    () => filterBotResults(results, { anyModeOnly, selectedCardNames }),
-    [results, anyModeOnly, selectedCardNames],
+    () =>
+      filterBotResults(results, {
+        anyModeOnly,
+        showWithheldFairBots,
+        selectedCardNames,
+      }),
+    [results, anyModeOnly, showWithheldFairBots, selectedCardNames],
   )
 
   if (results.length === 0) {

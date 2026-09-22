@@ -536,6 +536,24 @@
   box-shadow: 0 0 0 1px #66c0f4aa;
 }
 
+.card-item.withheld,
+.card-item.selected.withheld {
+  background: #3a261c;
+  border-color: #e08a3c;
+  box-shadow: 0 0 0 1px #e08a3c88;
+}
+
+.card-item.withheld .card-qty {
+  color: #e0a36a;
+}
+
+.card-withheld {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e0a36a;
+  line-height: 1.25;
+}
+
 .card-icon {
   width: 92px;
   height: 92px;
