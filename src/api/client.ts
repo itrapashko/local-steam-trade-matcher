@@ -1,8 +1,8 @@
 import { isSteamApiPath } from '../utils/steamProxy'
 
 const PRODUCTION_PROXY_BASE_URL = (import.meta.env.VITE_PROXY_BASE_URL ?? '').replace(/\/$/, '')
-const STEAM_FETCH_RETRIES = 3
-const STEAM_FETCH_RETRY_DELAY = 30_000
+const DEFAULT_FETCH_RETRY_DELAYS = [1000, 3000, 10000]
+const STEAM_FETCH_RETRY_DELAYS = [3000, 7000, 30000, 65000]
 
 function getProxyBaseUrl(): string {
   return import.meta.env.DEV ? '' : PRODUCTION_PROXY_BASE_URL
@@ -26,26 +26,28 @@ export function createApiClient(proxyBaseUrl?: string): ApiClient {
 
   async function fetchWithRetry(
     url: string,
-    init?: RequestInit,
-    retries = 2,
-    retryDelay = 1000,
+    init: RequestInit | undefined,
+    retryDelays: number[],
   ): Promise<Response> {
     let lastError: unknown
-    for (let attempt = 0; attempt <= retries; attempt++) {
+    const maxAttempts = retryDelays.length + 1
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
         const response = await fetch(url, init)
+        const canRetry = attempt < retryDelays.length
         const shouldRetry =
-          attempt < retries && (response.status === 429 || response.status === 0)
+          canRetry && (response.status === 429 || response.status === 403 || response.status === 0)
         if (shouldRetry) {
-          await delay(retryDelay * (attempt + 1))
+          await delay(retryDelays[attempt])
           continue
         }
         return response
       } catch (error) {
         lastError = error
-        if (attempt < retries) {
-          await delay(1000 * (attempt + 1))
+        if (attempt >= retryDelays.length) {
+          break
         }
+        await delay(retryDelays[attempt])
       }
     }
     throw lastError
@@ -54,13 +56,11 @@ export function createApiClient(proxyBaseUrl?: string): ApiClient {
   async function fetchResolved(path: string, init?: RequestInit): Promise<Response> {
     const url = resolveUrl(path)
     const isSteamApi = isSteamApiPath(url)
-    const retries = isSteamApi ? STEAM_FETCH_RETRIES : 2
-    const retryDelay = isSteamApi ? STEAM_FETCH_RETRY_DELAY : 1000
+    const retryDelays = isSteamApi ? STEAM_FETCH_RETRY_DELAYS : DEFAULT_FETCH_RETRY_DELAYS
     return fetchWithRetry(
       url,
       { ...init, redirect: 'follow' },
-      retries,
-      retryDelay,
+      retryDelays,
     )
   }
 
